@@ -1,0 +1,10 @@
+/.nyc_output
+/coverage
+/lib
+/node_modules
+/tests/fixtures/**/*.json
+/tests/fixtures/**/*.vue
+/tests/fixtures/**/*.svelte
+/tests/fixtures/**/*.astro
+!/.vscode
+!/.github
