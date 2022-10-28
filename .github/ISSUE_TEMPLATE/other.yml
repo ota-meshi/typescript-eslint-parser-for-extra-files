@@ -1,0 +1,21 @@
+name: Other
+description: An issue that doesn't fit into the other categories.
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this issue!
+
+        ❗ This parser is in the ***experimental stages*** of development.  
+        ❗  
+        ❗ Please don't ask questions about how to use it. You should read the source code and find out how to use it.  
+        ❗ PRs to improve the README or fix bugs are welcome.
+  - type: textarea
+    attributes:
+      label: Description
+      description: |
+        A clear and concise description.  
+        Also give a few code examples.
+    validations:
+      required: true

@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "strict": true,
+    "lib": ["es2020", "DOM"],
+    "module": "commonjs",
+    "declaration": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "esModuleInterop": true,
+
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.ts",
+    "tests/**/*.vue",
+    "tests/**/*.svelte",
+    "tests/**/*.astro",
+    "tools/**/*.ts",
+    "tsup.config.ts"
+  ]
+}

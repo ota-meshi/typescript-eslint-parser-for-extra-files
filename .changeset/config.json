@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config/schema.json",
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "ota-meshi/typescript-eslint-parser-for-extra-files"
+    }
+  ],
+  "commit": false,
+  "linked": [],
+  "access": "restricted",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "bumpVersionsWithWorkspaceProtocolOnly": true,
+  "ignore": []
+}

@@ -1,0 +1,10 @@
+---
+export type Foo = string; // Foo: string
+interface Props { // Props: Props
+  name: string; // name: string
+  greeting?: string; // greeting: string | undefined
+}
+const { greeting = "Hello", name } = Astro.props; // greeting: any, greeting: any, name: any, name: any, Astro.props: any
+---
+
+<h2>{greeting}, {name}!</h2> // greeting: any, name: any

@@ -1,0 +1,14 @@
+---
+import Foo from "../astro-component02/source.astro"; // Foo: (_props: Props) => any
+import { TypeFoo } from "../astro-component02/source.astro"; // TypeFoo: any, TypeFoo: any
+import { numberValue } from "./number"; // numberValue: 1, numberValue: 1
+let a: TypeFoo = "a"; // a: string
+interface Props { // Props: Props
+  b: TypeFoo; // TypeFoo: string, b: string
+  foo: string; // foo: string
+}
+let { b, foo }: number = Astro.props; // b: any, b: any, foo: any, foo: any, Astro.props: any
+const t = numberValue * 2; // t: number, numberValue: 1
+---
+
+<Foo>{a}{b}{foo}{t}</Foo> // a: string, b: any, foo: any, t: number

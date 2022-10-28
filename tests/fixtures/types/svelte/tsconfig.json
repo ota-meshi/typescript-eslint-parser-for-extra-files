@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "module": "ESNext",
+    "strict": true,
+    "moduleResolution": "Node"
+  },
+  "include": ["**/*.svelte", "**/*.ts"]
+}
