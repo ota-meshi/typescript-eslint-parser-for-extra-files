@@ -1,12 +1,27 @@
-import type { ExtraFileTransformer } from "../ts";
+import path from "path";
+import type { ExtraFileTransformerContext } from "../ts";
 import { transformForVue } from "./vue";
+import { transformForSvelte } from "./svelte";
 
-export function getExtraFileTransformer(
-  ext: string
-): ExtraFileTransformer | null {
+export function transformExtraFile(
+  code: string,
+  context: ExtraFileTransformerContext
+): string {
+  const ext = path.extname(context.filePath);
   if (ext === ".vue") {
-    return transformForVue;
+    try {
+      return transformForVue(code, context);
+    } catch {
+      // ignore
+    }
+  }
+  if (ext === ".svelte") {
+    try {
+      return transformForSvelte(code, context);
+    } catch {
+      // ignore
+    }
   }
 
-  return null;
+  return code;
 }

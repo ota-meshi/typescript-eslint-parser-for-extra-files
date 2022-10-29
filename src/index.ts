@@ -10,6 +10,9 @@ export function parseForESLint(
   code: string,
   options: ParserOptions = {}
 ): ReturnType<typeof tsEslintParser.parseForESLint> {
+  if (!options.project) {
+    return tsEslintParser.parseForESLint(code, options);
+  }
   const programs = [];
   for (const option of iterateOptions(options)) {
     programs.push(tsServiceManager.getProgram(code, option));

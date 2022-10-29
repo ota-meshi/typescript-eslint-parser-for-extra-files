@@ -1,15 +1,11 @@
 import path from "path";
 import ts from "typescript";
-import { getExtraFileTransformer } from "./transform";
+import { transformExtraFile } from "./transform";
 
 export type ExtraFileTransformerContext = {
   filePath: string;
   current: boolean;
 };
-export type ExtraFileTransformer = (
-  code: string,
-  context: ExtraFileTransformerContext
-) => string;
 
 export type ProgramOptions = {
   project: string;
@@ -123,13 +119,9 @@ export class TSService {
     watchCompilerHost.readFile = (fileName, ...args) => {
       const realFileName = toRealFileName(fileName, extraFileExtensions);
       const normalized = normalizeFileName(realFileName);
-      const ext = path.extname(normalized);
-      const transformer =
-        (extraFileExtensions.includes(ext) && getExtraFileTransformer(ext)) ||
-        ((s: string) => s);
       if (this.currTarget.filePath === normalized) {
         // It is the file currently being parsed.
-        return transformer(this.currTarget.code, {
+        return transformExtraFile(this.currTarget.code, {
           filePath: normalized,
           current: true,
         });
@@ -138,7 +130,7 @@ export class TSService {
       const code = original.readFile.call(this, realFileName, ...args);
       return (
         code &&
-        transformer(code, {
+        transformExtraFile(code, {
           filePath: normalized,
           current: false,
         })

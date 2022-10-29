@@ -8,7 +8,8 @@
 
 import fs from "fs";
 import path from "path";
-import * as parser from "vue-eslint-parser";
+import * as vueParser from "vue-eslint-parser";
+import * as svelteParser from "svelte-eslint-parser";
 import * as tsParser from "../../src";
 import * as tsEslintParser from "@typescript-eslint/parser";
 import semver from "semver";
@@ -65,7 +66,7 @@ function buildTypes(
     }
   }
 
-  parser.AST.traverseNodes(result.ast as any, {
+  vueParser.AST.traverseNodes(result.ast as any, {
     visitorKeys: result.visitorKeys as any,
     enterNode(node, parent) {
       if (checked.has(parent)) {
@@ -136,7 +137,12 @@ describe("Template Types", () => {
 
     describe(`'test/fixtures/ast/${name}/${path.basename(sourcePath)}'`, () => {
       it("should be parsed to valid Types.", () => {
-        const result = parser.parseForESLint(source, options);
+        const result =
+          path.extname(sourcePath) === ".vue"
+            ? vueParser.parseForESLint(source, options)
+            : path.extname(sourcePath) === ".svelte"
+            ? svelteParser.parseForESLint(source, options)
+            : vueParser.parseForESLint(source, options);
         const actual = buildTypes(source, result as any);
         const resultPath = sourcePath.replace(/source\.([a-z]+)$/u, "types.$1");
 

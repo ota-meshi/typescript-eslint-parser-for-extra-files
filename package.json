@@ -41,10 +41,14 @@
   },
   "peerDependencies": {
     "@typescript-eslint/parser": ">=5.41.0",
+    "svelte2tsx": ">=0.5.20",
     "typescript": ">=4.8.4",
     "vue": "^3.2.41"
   },
   "peerDependenciesMeta": {
+    "svelte2tsx": {
+      "optional": true
+    },
     "typescript": {
       "optional": true
     },
@@ -75,6 +79,7 @@
     "eslint-plugin-node-dependencies": "^0.10.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-regexp": "^1.0.0",
+    "eslint-plugin-svelte": "^2.11.0",
     "eslint-plugin-vue": "^9.6.0",
     "eslint-plugin-yml": "^1.2.0",
     "mocha": "^10.0.0",
@@ -82,7 +87,9 @@
     "nyc": "^15.1.0",
     "prettier": "^2.7.1",
     "prettier-plugin-pkg": "^0.17.1",
+    "prettier-plugin-svelte": "^2.8.0",
     "semver": "^7.3.5",
+    "svelte2tsx": "^0.5.20",
     "typescript": "~4.8.4",
     "vue": "^3.2.41",
     "vue-eslint-parser": "^9.1.0"
