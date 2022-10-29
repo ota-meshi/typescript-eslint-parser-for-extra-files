@@ -22,6 +22,7 @@ import { iterateFixtures } from "./fixtures";
 //------------------------------------------------------------------------------
 
 const ROOT = path.join(__dirname, "../fixtures/types");
+const PROJECT_ROOT = path.join(__dirname, "../..");
 const PARSER_OPTIONS = {
   comment: true,
   ecmaVersion: 2020,
@@ -85,7 +86,12 @@ function buildTypes(
       }
       return `${l} // ${types[i].join(", ").replace(/\n\s*/g, " ")}`;
     })
-    .join("\n");
+    .join("\n")
+    .replace(new RegExp(escapeRegExp(PROJECT_ROOT), "gu"), "");
+}
+
+function escapeRegExp(string: string) {
+  return string.replace(/[$()*+.?[\\\]^{|}]/g, "\\$&");
 }
 
 //------------------------------------------------------------------------------
