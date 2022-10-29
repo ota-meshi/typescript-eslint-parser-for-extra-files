@@ -3,6 +3,7 @@ import type { ProgramOptions } from "./ts";
 import { TSServiceManager } from "./ts";
 import * as tsEslintParser from "@typescript-eslint/parser";
 
+const DEFAULT_EXTRA_FILE_EXTENSIONS = [".vue", ".svelte", ".astro"];
 const tsServiceManager = new TSServiceManager();
 
 export function parseForESLint(
@@ -16,6 +17,8 @@ export function parseForESLint(
   const parserOptions = {
     ...options,
     programs,
+    extraFileExtensions:
+      options.extraFileExtensions || DEFAULT_EXTRA_FILE_EXTENSIONS,
   };
   return tsEslintParser.parseForESLint(code, parserOptions as any);
 }
@@ -38,11 +41,8 @@ function* iterateOptions(options: ParserOptions): Iterable<ProgramOptions> {
     yield {
       project,
       filePath: options.filePath,
-      extraFileExtensions: options.extraFileExtensions || [
-        ".vue",
-        ".svelte",
-        ".astro",
-      ],
+      extraFileExtensions:
+        options.extraFileExtensions || DEFAULT_EXTRA_FILE_EXTENSIONS,
     };
   }
 }

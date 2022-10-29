@@ -1,8 +1,0 @@
-{
-    "compilerOptions": {
-        "lib": ["ESNext"],
-        "module": "ESNext",
-        "strict": true
-    },
-    "include": ["**/*.vue", "**/*.ts"]
-}

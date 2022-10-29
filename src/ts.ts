@@ -63,15 +63,20 @@ export class TSService {
   }
 
   public getProgram(code: string, filePath: string): ts.Program {
+    const lastTargetFilePath = this.currTarget.filePath;
     this.currTarget = {
       code,
       filePath,
     };
-    getFileNamesIncludingVirtualTSX(filePath, this.extraFileExtensions).forEach(
-      (vFilePath) => {
+    const refreshTargetPaths = [filePath, lastTargetFilePath].filter((s) => s);
+    for (const targetPath of refreshTargetPaths) {
+      getFileNamesIncludingVirtualTSX(
+        targetPath,
+        this.extraFileExtensions
+      ).forEach((vFilePath) => {
         this.fileWatchCallbacks.get(vFilePath)?.();
-      }
-    );
+      });
+    }
 
     const program = this.watch.getProgram().getProgram();
     // sets parent pointers in source files

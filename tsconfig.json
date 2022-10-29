@@ -17,6 +17,9 @@
   "include": [
     "src/**/*.ts",
     "tests/**/*.ts",
+    "tests/**/*.vue",
+    "tests/**/*.svelte",
+    "tests/**/*.astro",
     "tools/**/*.ts",
     "benchmark/**/*.ts"
   ]

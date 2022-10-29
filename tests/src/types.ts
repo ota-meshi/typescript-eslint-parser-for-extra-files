@@ -13,15 +13,13 @@ import * as tsParser from "../../src";
 import * as tsEslintParser from "@typescript-eslint/parser";
 import semver from "semver";
 import assert from "assert";
+import { iterateFixtures } from "./fixtures";
 
 //------------------------------------------------------------------------------
 // Helpers
 //------------------------------------------------------------------------------
 
 const ROOT = path.join(__dirname, "../fixtures/types");
-const TARGETS = fs
-  .readdirSync(ROOT)
-  .filter((f) => fs.statSync(path.join(ROOT, f)).isDirectory());
 const PARSER_OPTIONS = {
   comment: true,
   ecmaVersion: 2020,
@@ -39,8 +37,6 @@ const PARSER_OPTIONS = {
       },
     },
   },
-  project: path.join(ROOT, "tsconfig.json"),
-  extraFileExtensions: [".vue"],
 };
 
 function buildTypes(
@@ -105,10 +101,12 @@ function buildTypes(
 //------------------------------------------------------------------------------
 
 describe("Template Types", () => {
-  for (const name of TARGETS) {
-    const sourcePath = path.join(ROOT, `${name}/source.vue`);
-    const optionsPath = path.join(ROOT, `${name}/parser-options.json`);
-    const requirementsPath = path.join(ROOT, `${name}/requirements.json`);
+  for (const { name, sourcePath, filePath, tsconfigPath } of iterateFixtures(
+    ROOT
+  )) {
+    // if (!sourcePath.endsWith(".ts")) continue;
+    const optionsPath = path.join(filePath, `parser-options.json`);
+    const requirementsPath = path.join(filePath, `requirements.json`);
     const source = fs.readFileSync(sourcePath, "utf8");
     const parserOptions = fs.existsSync(optionsPath)
       ? JSON.parse(fs.readFileSync(optionsPath, "utf8"))
@@ -119,6 +117,7 @@ describe("Template Types", () => {
     const options = Object.assign(
       { filePath: sourcePath },
       PARSER_OPTIONS,
+      { project: tsconfigPath },
       parserOptions
     );
 
@@ -135,15 +134,16 @@ describe("Template Types", () => {
       continue;
     }
 
-    describe(`'test/fixtures/ast/${name}/source.vue'`, () => {
+    describe(`'test/fixtures/ast/${name}/${path.basename(sourcePath)}'`, () => {
       it("should be parsed to valid Types.", () => {
         const result = parser.parseForESLint(source, options);
         const actual = buildTypes(source, result as any);
-        const resultPath = path.join(ROOT, `${name}/types.vue`);
+        const resultPath = sourcePath.replace(/source\.([a-z]+)$/u, "types.$1");
 
         if (!fs.existsSync(resultPath)) {
           fs.writeFileSync(resultPath, actual);
         }
+        fs.writeFileSync(resultPath, actual); // TODO
         const expected = fs.readFileSync(resultPath, "utf8");
 
         try {

@@ -10,7 +10,10 @@ export function transformForVue(
   // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires -- ignore
   const compiler: typeof compilerSfc = require("vue/compiler-sfc");
   const result = compiler.parse(code);
-  const compiled = compiler.compileScript(result.descriptor, { id: "id" });
+  const compiled = compiler.compileScript(result.descriptor, {
+    id: "id",
+    reactivityTransform: true,
+  });
 
   return compiled.content;
 }

@@ -2,9 +2,13 @@
 /coverage
 /lib
 /node_modules
-/tests/fixtures/**/*.json
-/tests/fixtures/**/*.vue
-/tests/fixtures/**/*.svelte
-/tests/fixtures/**/*.astro
+/tests/fixtures/**/types.vue
+/tests/fixtures/**/types.svelte
+/tests/fixtures/**/types.astro
+/tests/fixtures/**/types.ts
+/tests/fixtures/**/actual-types.vue
+/tests/fixtures/**/actual-types.svelte
+/tests/fixtures/**/actual-types.astro
+/tests/fixtures/**/actual-types.ts
 !/.vscode
 !/.github

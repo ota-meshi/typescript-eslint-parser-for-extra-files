@@ -33,21 +33,6 @@ jobs:
         run: yarn install --ignore-engines
       - name: Test
         run: yarn test
-  update-fixtures:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Install Packages
-        run: yarn install --ignore-engines
-      - name: Update fixtures
-        run: yarn update-fixtures
-      - name: Check changes
-        run: |
-          git add --all && \
-          git diff-index --cached HEAD --stat --exit-code
   test-and-coverage:
     runs-on: ubuntu-latest
     steps:

@@ -1,20 +1,22 @@
-"use strict";
-
 // const version = require("./package.json").version
 
 module.exports = {
   globals: {
     process: "readonly",
     require: "readonly",
+    defineProps: "readonly",
+    $ref: "readonly",
   },
   parserOptions: {
-    sourceType: "script",
+    sourceType: "module",
     ecmaVersion: "latest",
+    project: "./tsconfig.json",
   },
   extends: [
     "plugin:@ota-meshi/recommended",
     "plugin:@ota-meshi/+node",
     "plugin:@ota-meshi/+typescript",
+    "plugin:@ota-meshi/+vue3",
     "plugin:@ota-meshi/+prettier",
     "plugin:@ota-meshi/+package-json",
     "plugin:@ota-meshi/+json",
@@ -32,6 +34,7 @@ module.exports = {
         usePrettierrc: true,
       },
     ],
+    "vue/multi-word-component-names": "off",
   },
   overrides: [
     {
@@ -41,10 +44,6 @@ module.exports = {
     {
       files: ["*.ts"],
       parser: "@typescript-eslint/parser",
-      parserOptions: {
-        sourceType: "module",
-        project: "./tsconfig.json",
-      },
       rules: {
         "@typescript-eslint/naming-convention": [
           "error",
