@@ -142,7 +142,6 @@ describe("Template Types", () => {
         if (!fs.existsSync(resultPath)) {
           fs.writeFileSync(resultPath, actual);
         }
-        fs.writeFileSync(resultPath, actual); // TODO
         const expected = fs.readFileSync(resultPath, "utf8");
 
         try {

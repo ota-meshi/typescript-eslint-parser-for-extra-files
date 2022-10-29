@@ -53,7 +53,7 @@ module.exports = {
         parser: { ts: "@typescript-eslint/parser" },
       },
       rules: {
-        "one-ver": "off",
+        "one-var": "off",
       },
     },
     {
@@ -61,6 +61,12 @@ module.exports = {
       extends: ["plugin:astro/recommended", "plugin:@ota-meshi/+prettier"],
       parserOptions: {
         parser: "@typescript-eslint/parser",
+      },
+      rules: {
+        "no-unused-vars": [
+          "error",
+          { varsIgnorePattern: "^(?:_(?:[^_].*)?|Props)$" },
+        ],
       },
     },
     {
