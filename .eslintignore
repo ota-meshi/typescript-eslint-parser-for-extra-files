@@ -12,3 +12,4 @@
 /tests/fixtures/**/actual-types.ts
 !/.vscode
 !/.github
+/lib

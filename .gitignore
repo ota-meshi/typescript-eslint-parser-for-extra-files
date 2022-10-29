@@ -104,5 +104,8 @@ dist
 .tern-port
 
 ## Repo
-
 /tests/fixtures/**/actual-types.vue
+/tests/fixtures/**/actual-types.svelte
+/tests/fixtures/**/actual-types.astro
+/tests/fixtures/**/actual-types.ts
+/lib

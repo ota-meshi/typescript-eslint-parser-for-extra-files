@@ -21,6 +21,6 @@
     "tests/**/*.svelte",
     "tests/**/*.astro",
     "tools/**/*.ts",
-    "benchmark/**/*.ts"
+    "tsup.config.ts"
   ]
 }
