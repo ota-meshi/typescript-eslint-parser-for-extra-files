@@ -76,15 +76,25 @@ npm install --save-dev astrojs-compiler-sync@latest @astrojs/compiler
     // ....
     "overrides": [
         {
+            "files": ["*.ts", "*.tsx"],
+            "parser": "typescript-eslint-parser-for-extra-files",
+            "parserOptions": {
+                "project": "./your/tsconfig.json"
+                // ....
+            },
+            // ....
+        },
+        {
             "files": ["*.vue"],
             "parser": "vue-eslint-parser",
             "parserOptions": {
-                "parser": require('typescript-eslint-parser-for-extra-files'),
+                "parser": require("typescript-eslint-parser-for-extra-files"),
                 // Or
                 // "parser": {
-                //     "ts": require('typescript-eslint-parser-for-extra-files')
+                //     "ts": require("typescript-eslint-parser-for-extra-files")
                 // }
                 "project": "./your/tsconfig.json"
+                // ....
             },
             // ....
         }
@@ -101,15 +111,25 @@ npm install --save-dev astrojs-compiler-sync@latest @astrojs/compiler
     // ....
     "overrides": [
         {
+            "files": ["*.ts", "*.tsx"],
+            "parser": "typescript-eslint-parser-for-extra-files",
+            "parserOptions": {
+                "project": "./your/tsconfig.json"
+                // ....
+            },
+            // ....
+        },
+        {
             "files": ["*.svelte"],
             "parser": "svelte-eslint-parser",
             "parserOptions": {
-                "parser": require('typescript-eslint-parser-for-extra-files'),
+                "parser": require("typescript-eslint-parser-for-extra-files"),
                 // Or
                 // "parser": {
-                //     "ts": require('typescript-eslint-parser-for-extra-files')
+                //     "ts": require("typescript-eslint-parser-for-extra-files")
                 // }
                 "project": "./your/tsconfig.json"
+                // ....
             },
             // ....
         }
@@ -126,11 +146,21 @@ npm install --save-dev astrojs-compiler-sync@latest @astrojs/compiler
     // ....
     "overrides": [
         {
+            "files": ["*.ts", "*.tsx"],
+            "parser": "typescript-eslint-parser-for-extra-files",
+            "parserOptions": {
+                "project": "./your/tsconfig.json"
+                // ....
+            },
+            // ....
+        },
+        {
             "files": ["*.astro"],
             "parser": "astro-eslint-parser",
             "parserOptions": {
-                "parser": require('typescript-eslint-parser-for-extra-files'),
+                "parser": require("typescript-eslint-parser-for-extra-files"),
                 "project": "./your/tsconfig.json"
+                // ....
             },
             // ....
         }
