@@ -10,8 +10,9 @@ import fs from "fs";
 import path from "path";
 import * as vueParser from "vue-eslint-parser";
 import * as svelteParser from "svelte-eslint-parser";
+import * as astroParser from "astro-eslint-parser";
 import * as tsParser from "../../src";
-import * as tsEslintParser from "@typescript-eslint/parser";
+import type * as tsEslintParser from "@typescript-eslint/parser";
 import semver from "semver";
 import assert from "assert";
 import { iterateFixtures } from "./fixtures";
@@ -27,17 +28,7 @@ const PARSER_OPTIONS = {
   loc: true,
   range: true,
   tokens: true,
-  parser: {
-    ts: tsParser,
-    "<template>": {
-      parseForESLint(code: string, options: any) {
-        return tsEslintParser.parseForESLint(code, {
-          ...options,
-          project: undefined,
-        });
-      },
-    },
-  },
+  parser: tsParser,
 };
 
 function buildTypes(
@@ -142,6 +133,8 @@ describe("Template Types", () => {
             ? vueParser.parseForESLint(source, options)
             : path.extname(sourcePath) === ".svelte"
             ? svelteParser.parseForESLint(source, options)
+            : path.extname(sourcePath) === ".astro"
+            ? astroParser.parseForESLint(source, options)
             : vueParser.parseForESLint(source, options);
         const actual = buildTypes(source, result as any);
         const resultPath = sourcePath.replace(/source\.([a-z]+)$/u, "types.$1");

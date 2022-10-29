@@ -38,7 +38,7 @@ npm install --save-dev vue@latest
 Install `svelte2tsx` v0.5.20 or newer.
 
 ```bash
-npm install --save-dev svelte2tsx@latest
+npm install --save-dev svelte2tsx@latest svelte
 ```
 
 ### With Astro
@@ -46,7 +46,7 @@ npm install --save-dev svelte2tsx@latest
 Install `astrojs-compiler-sync` v0.3.1 or newer.
 
 ```bash
-npm install --save-dev astrojs-compiler-sync@latest
+npm install --save-dev astrojs-compiler-sync@latest @astrojs/compiler
 ```
 
 ## 📖 Usage

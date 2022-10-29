@@ -13,15 +13,24 @@ export function parseForESLint(
   if (!options.project) {
     return tsEslintParser.parseForESLint(code, options);
   }
+  const extraFileExtensions =
+    options.extraFileExtensions || DEFAULT_EXTRA_FILE_EXTENSIONS;
   const programs = [];
   for (const option of iterateOptions(options)) {
     programs.push(tsServiceManager.getProgram(code, option));
   }
+  let filePath = options.filePath;
+  if (
+    filePath &&
+    extraFileExtensions.some((ext) => options.filePath?.endsWith(ext))
+  ) {
+    filePath = `${filePath}.tsx`;
+  }
   const parserOptions = {
     ...options,
+    filePath,
     programs,
-    extraFileExtensions:
-      options.extraFileExtensions || DEFAULT_EXTRA_FILE_EXTENSIONS,
+    extraFileExtensions,
   };
   return tsEslintParser.parseForESLint(code, parserOptions as any);
 }

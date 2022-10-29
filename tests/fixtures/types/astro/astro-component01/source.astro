@@ -1,0 +1,14 @@
+---
+import Foo from "../astro-component02/source.astro";
+import { TypeFoo } from "../astro-component02/source.astro";
+import { numberValue } from "./number";
+let a: TypeFoo = "a";
+interface Props {
+  b: TypeFoo;
+  foo: string;
+}
+let { b, foo }: number = Astro.props;
+const t = numberValue * 2;
+---
+
+<Foo>{a}{b}{foo}{t}</Foo>

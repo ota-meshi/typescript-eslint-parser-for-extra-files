@@ -57,6 +57,13 @@ module.exports = {
       },
     },
     {
+      files: ["*.astro"],
+      extends: ["plugin:astro/recommended", "plugin:@ota-meshi/+prettier"],
+      parserOptions: {
+        parser: "@typescript-eslint/parser",
+      },
+    },
+    {
       files: ["*.json"],
       parser: "jsonc-eslint-parser",
     },
