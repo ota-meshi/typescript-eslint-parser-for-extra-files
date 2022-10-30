@@ -145,6 +145,9 @@ describe("Template Types", () => {
         const actual = buildTypes(source, result as any);
         const resultPath = sourcePath.replace(/source\.([a-z]+)$/u, "types.$1");
 
+        if (process.argv.includes("--update")) {
+          fs.writeFileSync(resultPath, actual);
+        }
         if (!fs.existsSync(resultPath)) {
           fs.writeFileSync(resultPath, actual);
         }

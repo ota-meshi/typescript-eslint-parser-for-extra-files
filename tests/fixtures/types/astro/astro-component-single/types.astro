@@ -1,0 +1,9 @@
+---
+interface Props { // Props: Props
+  a: string; // a: string
+  b: number; // b: number
+}
+let { a, b } = Astro.props; // a: any, a: any, b: any, b: any, Astro.props: any
+---
+
+{a}{b} // a: any, b: any
