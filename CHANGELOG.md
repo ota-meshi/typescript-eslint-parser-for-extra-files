@@ -1,5 +1,11 @@
 # typescript-eslint-parser-for-extra-files
 
+## 0.0.3
+
+### Patch Changes
+
+- [#6](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/pull/6) [`ba19700`](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/commit/ba19700b0892208279484761f6e04d1c2366dd9d) Thanks [@ota-meshi](https://github.com/ota-meshi)! - fix: error when `include` does not contain `*.tsx`
+
 ## 0.0.2
 
 ### Patch Changes
