@@ -127,7 +127,7 @@ export class TSService {
       return [
         ...new Set(
           results.map((result) =>
-            toVirtualTSXlFileName(result, extraFileExtensions)
+            toVirtualTSXFileName(result, extraFileExtensions)
           )
         ),
       ];
@@ -171,7 +171,7 @@ export class TSService {
         }
         const include = [configJson.config.include]
           .flat()
-          .map((s) => toVirtualTSXlFileName(s, extraFileExtensions));
+          .map((s) => toVirtualTSXFileName(s, extraFileExtensions));
 
         return JSON.stringify({
           ...configJson.config,
@@ -245,10 +245,7 @@ function getFileNamesIncludingVirtualTSX(
 }
 
 /** If the given filename has extra file extensions, returns the real virtual filename. */
-function toVirtualTSXlFileName(
-  fileName: string,
-  extraFileExtensions: string[]
-) {
+function toVirtualTSXFileName(fileName: string, extraFileExtensions: string[]) {
   for (const extraFileExtension of extraFileExtensions) {
     if (fileName.endsWith(extraFileExtension)) {
       return `${fileName}.tsx`;
