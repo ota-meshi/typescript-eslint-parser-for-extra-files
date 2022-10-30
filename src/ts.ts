@@ -54,8 +54,8 @@ export class TSService {
   private readonly fileWatchCallbacks = new Map<string, () => void>();
 
   public constructor(tsconfigPath: string, extraFileExtensions: string[]) {
-    this.watch = this.createWatch(tsconfigPath, extraFileExtensions);
     this.extraFileExtensions = extraFileExtensions;
+    this.watch = this.createWatch(tsconfigPath, extraFileExtensions);
   }
 
   public getProgram(code: string, filePath: string): ts.Program {
@@ -84,6 +84,7 @@ export class TSService {
     tsconfigPath: string,
     extraFileExtensions: string[]
   ): ts.WatchOfConfigFile<ts.BuilderProgram> {
+    const normalizedTsconfigPath = normalizeFileName(tsconfigPath);
     const watchCompilerHost = ts.createWatchCompilerHost(
       tsconfigPath,
       {
@@ -103,18 +104,31 @@ export class TSService {
       () => {
         // Not reported in reportWatchStatus.
       },
-      undefined,
-      extraFileExtensions.map((extension) => ({
-        extension,
-        isMixedContent: true,
-        scriptKind: ts.ScriptKind.Deferred,
-      }))
+      undefined
+      // extraFileExtensions.map((extension) => ({
+      //   extension,
+      //   isMixedContent: true,
+      //   scriptKind: ts.ScriptKind.Deferred,
+      // }))
     );
     const original = {
       // eslint-disable-next-line @typescript-eslint/unbound-method -- Store original
       readFile: watchCompilerHost.readFile,
       // eslint-disable-next-line @typescript-eslint/unbound-method -- Store original
       fileExists: watchCompilerHost.fileExists,
+      // eslint-disable-next-line @typescript-eslint/unbound-method -- Store original
+      readDirectory: watchCompilerHost.readDirectory,
+    };
+    watchCompilerHost.readDirectory = (...args) => {
+      const results = original.readDirectory.call(watchCompilerHost, ...args);
+
+      return [
+        ...new Set(
+          results.map((result) =>
+            toVirtualTSXlFileName(result, extraFileExtensions)
+          )
+        ),
+      ];
     };
     watchCompilerHost.readFile = (fileName, ...args) => {
       const realFileName = toRealFileName(fileName, extraFileExtensions);
@@ -127,19 +141,40 @@ export class TSService {
         });
       }
 
-      const code = original.readFile.call(this, realFileName, ...args);
-      return (
-        code &&
-        transformExtraFile(code, {
-          filePath: normalized,
-          current: false,
-        })
+      const code = original.readFile.call(
+        watchCompilerHost,
+        realFileName,
+        ...args
       );
+      if (!code) {
+        return code;
+      }
+      if (normalizedTsconfigPath === normalized) {
+        const configJson = ts.parseConfigFileTextToJson(realFileName, code);
+        if (!configJson.config) {
+          return code;
+        }
+        let include = undefined;
+
+        if (configJson.config.include) {
+          include = [configJson.config.include]
+            .flat()
+            .map((s) => toVirtualTSXlFileName(s, extraFileExtensions));
+        }
+        return JSON.stringify({
+          ...configJson.config,
+          include,
+        });
+      }
+      return transformExtraFile(code, {
+        filePath: normalized,
+        current: false,
+      });
     };
     // Modify it so that it can be determined that the virtual file actually exists.
     watchCompilerHost.fileExists = (fileName, ...args) =>
       original.fileExists.call(
-        this,
+        watchCompilerHost,
         toRealFileName(fileName, extraFileExtensions),
         ...args
       );
@@ -195,6 +230,19 @@ function getFileNamesIncludingVirtualTSX(
     }
   }
   return [fileName];
+}
+
+/** If the given filename has extra file extensions, returns the real virtual filename. */
+function toVirtualTSXlFileName(
+  fileName: string,
+  extraFileExtensions: string[]
+) {
+  for (const extraFileExtension of extraFileExtensions) {
+    if (fileName.endsWith(extraFileExtension)) {
+      return `${fileName}.tsx`;
+    }
+  }
+  return fileName;
 }
 
 /** If the given filename is a virtual filename (.vue.tsx), returns the real filename. */

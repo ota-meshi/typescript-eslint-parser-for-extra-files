@@ -7,7 +7,7 @@ interface Props { // Props: Props
   b: TypeFoo; // TypeFoo: string, b: string
   foo: string; // foo: string
 }
-let { b, foo }: number = Astro.props; // b: any, b: any, foo: any, foo: any, Astro.props: any
+let { b, foo } = Astro.props; // b: any, b: any, foo: any, foo: any, Astro.props: any
 const t = numberValue * 2; // t: number, numberValue: 1
 ---
 
