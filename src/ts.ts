@@ -84,7 +84,9 @@ export class TSService {
     tsconfigPath: string,
     extraFileExtensions: string[]
   ): ts.WatchOfConfigFile<ts.BuilderProgram> {
-    const normalizedTsconfigPath = normalizeFileName(tsconfigPath);
+    const normalizedTsconfigPaths = new Set([
+      normalizeFileName(toAbsolutePath(tsconfigPath)),
+    ]);
     const watchCompilerHost = ts.createWatchCompilerHost(
       tsconfigPath,
       {
@@ -149,18 +151,28 @@ export class TSService {
       if (!code) {
         return code;
       }
-      if (normalizedTsconfigPath === normalized) {
+      if (normalizedTsconfigPaths.has(normalized)) {
         const configJson = ts.parseConfigFileTextToJson(realFileName, code);
         if (!configJson.config) {
           return code;
         }
-        let include = undefined;
-
-        if (configJson.config.include) {
-          include = [configJson.config.include]
-            .flat()
-            .map((s) => toVirtualTSXlFileName(s, extraFileExtensions));
+        if (configJson.config.extends) {
+          for (const extendConfigPath of [configJson.config.extends].flat()) {
+            normalizedTsconfigPaths.add(
+              normalizeFileName(
+                toAbsolutePath(extendConfigPath, path.dirname(normalized))
+              )
+            );
+          }
         }
+
+        if (!configJson.config.include) {
+          return code;
+        }
+        const include = [configJson.config.include]
+          .flat()
+          .map((s) => toVirtualTSXlFileName(s, extraFileExtensions));
+
         return JSON.stringify({
           ...configJson.config,
           include,
@@ -274,8 +286,8 @@ function normalizeFileName(fileName: string) {
   return normalized.toLowerCase();
 }
 
-function toAbsolutePath(filePath: string) {
+function toAbsolutePath(filePath: string, baseDir?: string) {
   return path.isAbsolute(filePath)
     ? filePath
-    : path.join(process.cwd(), filePath);
+    : path.join(baseDir || process.cwd(), filePath);
 }
