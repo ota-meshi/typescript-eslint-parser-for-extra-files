@@ -153,7 +153,10 @@ describe("Template Types", () => {
         try {
           assert.strictEqual(actual, expected);
         } catch (e) {
-          fs.writeFileSync(path.join(ROOT, `${name}/actual-types.vue`), actual);
+          fs.writeFileSync(
+            sourcePath.replace(/source\.([a-z]+)$/u, "actual-types.$1"),
+            actual
+          );
           throw e;
         }
       });
