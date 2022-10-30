@@ -10,7 +10,25 @@ This parser is in the ***experimental stages*** of development.
 
 A custom ESLint parser that provides type information when importing `*.vue`, `*.svelte`, and `*.astro` files.
 
-`@typescript-eslint/parser` provides type information mostly well, but if you import extra files (other than `*.ts`, `*.tsx`, `*.d.ts`, `*.js`, `*.jsx`, and `*.json`) it treats it as `any` type.  
+`@typescript-eslint/parser` provides type information mostly well, but if you import extra files (other than `*.ts`, `*.tsx`, `*.d.ts`, `*.js`, `*.jsx`, and `*.json`) it treats it as `any` type.
+
+e.g.
+
+```vue
+<script lang="ts">
+import HelloWorld from './components/HelloWorld.vue' // <- typescript program can't parse it. because it will read including template and style.
+
+export default {
+  name: 'App',
+  components: {
+    HelloWorld // <- so type information is `any`
+  }
+}
+</script>
+```
+
+See also <https://github.com/vuejs/vue-eslint-parser/issues/104>, and <https://github.com/typescript-eslint/typescript-eslint/issues/2865>.
+
 This parser can be used to provide type information for importing `*.vue`, `*.svelte`, and `*.astro` files.
 
 This parser is used in combination with [vue-eslint-parser], [svelte-eslint-parser], and [astro-eslint-parser].
@@ -174,10 +192,10 @@ npm install --save-dev astrojs-compiler-sync@latest @astrojs/compiler
 
 - Angle bracket type assertions cannot be used.
 
-This parser parses as JSX enabled.  
-Therefore, angle bracket type assertions cannot be used. Use the `as` operator instead.
+  This parser parses as JSX enabled.  
+  Therefore, angle bracket type assertions cannot be used. Use the `as` operator instead.
 
-[The TypeScript Handbook - JSX > The `as` operator](https://www.typescriptlang.org/docs/handbook/jsx.html#the-as-operator)
+  [The TypeScript Handbook - JSX > The `as` operator](https://www.typescriptlang.org/docs/handbook/jsx.html#the-as-operator)
 
 ## 🍻 Contributing
 
