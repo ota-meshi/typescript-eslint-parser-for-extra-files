@@ -170,6 +170,15 @@ npm install --save-dev astrojs-compiler-sync@latest @astrojs/compiler
 }
 ```
 
+## 👻 Limitations
+
+- Angle bracket type assertions cannot be used.
+
+This parser parses as JSX enabled.  
+Therefore, angle bracket type assertions cannot be used. Use the `as` operator instead.
+
+[The TypeScript Handbook - JSX > The `as` operator](https://www.typescriptlang.org/docs/handbook/jsx.html#the-as-operator)
+
 ## 🍻 Contributing
 
 Welcome contributing!
