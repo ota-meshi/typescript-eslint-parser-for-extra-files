@@ -43,6 +43,8 @@ export class TSServiceManager {
 export class TSService {
   private readonly watch: ts.WatchOfConfigFile<ts.BuilderProgram>;
 
+  private readonly tsconfigPath: string;
+
   public readonly extraFileExtensions: string[];
 
   private currTarget = {
@@ -53,9 +55,8 @@ export class TSService {
 
   private readonly fileWatchCallbacks = new Map<string, () => void>();
 
-  private readonly dirWatchCallbacks = new Map<string, () => void>();
-
   public constructor(tsconfigPath: string, extraFileExtensions: string[]) {
+    this.tsconfigPath = tsconfigPath;
     this.extraFileExtensions = extraFileExtensions;
     this.watch = this.createWatch(tsconfigPath, extraFileExtensions);
   }
@@ -77,31 +78,13 @@ export class TSService {
       filePath: normalized,
       dirMap,
     };
-    for (const { filePath: targetPath, dirMap: map } of [
-      this.currTarget,
-      lastTarget,
-    ]) {
+    for (const { filePath: targetPath } of [this.currTarget, lastTarget]) {
       if (!targetPath) continue;
-      if (ts.sys.fileExists(targetPath)) {
-        getFileNamesIncludingVirtualTSX(
-          targetPath,
-          this.extraFileExtensions
-        ).forEach((vFilePath) => {
-          this.fileWatchCallbacks.get(vFilePath)?.();
-        });
-      } else {
+      if (!ts.sys.fileExists(targetPath)) {
         // Signal a directory change to request a re-scan of the directory
         // because it targets a file that does not actually exist.
-        for (const dirName of map.keys()) {
-          this.dirWatchCallbacks.get(dirName)?.();
-        }
+        this.fileWatchCallbacks.get(normalizeFileName(this.tsconfigPath))?.();
       }
-    }
-
-    const refreshTargetPaths = [normalized, lastTarget.filePath].filter(
-      (s) => s
-    );
-    for (const targetPath of refreshTargetPaths) {
       getFileNamesIncludingVirtualTSX(
         targetPath,
         this.extraFileExtensions
@@ -281,12 +264,10 @@ export class TSService {
       };
     };
     // Use watchCompilerHost but don't actually watch the files and directories.
-    watchCompilerHost.watchDirectory = (dirName, callback) => {
-      const normalized = normalizeFileName(dirName);
-      this.dirWatchCallbacks.set(normalized, () => callback(dirName));
+    watchCompilerHost.watchDirectory = () => {
       return {
         close: () => {
-          this.dirWatchCallbacks.delete(normalized);
+          // noop
         },
       };
     };
