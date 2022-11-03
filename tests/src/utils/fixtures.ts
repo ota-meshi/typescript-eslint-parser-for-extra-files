@@ -7,7 +7,11 @@ export function iterateFixtures(baseDir: string): Iterable<{
   sourcePath: string;
   tsconfigPath: string;
 }> {
-  return iterateFixturesWithTsConfig(baseDir, "");
+  const tsconfigPathCandidate = path.join(baseDir, `tsconfig.json`);
+  const tsconfigPath = fs.existsSync(tsconfigPathCandidate)
+    ? tsconfigPathCandidate
+    : "";
+  return iterateFixturesWithTsConfig(baseDir, tsconfigPath);
 }
 
 function* iterateFixturesWithTsConfig(

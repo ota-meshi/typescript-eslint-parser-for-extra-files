@@ -18,7 +18,6 @@ export class TSServiceManager {
 
   public getProgram(code: string, options: ProgramOptions): ts.Program {
     const tsconfigPath = options.project;
-    const fileName = normalizeFileName(toAbsolutePath(options.filePath));
     const extraFileExtensions = [...new Set(options.extraFileExtensions)];
 
     let serviceList = this.tsServices.get(tsconfigPath);
@@ -37,35 +36,55 @@ export class TSServiceManager {
       serviceList.unshift(service);
     }
 
-    return service.getProgram(code, fileName);
+    return service.getProgram(code, options.filePath);
   }
 }
 
 export class TSService {
   private readonly watch: ts.WatchOfConfigFile<ts.BuilderProgram>;
 
+  private readonly tsconfigPath: string;
+
   public readonly extraFileExtensions: string[];
 
   private currTarget = {
     code: "",
     filePath: "",
+    dirMap: new Map<string, { name: string; path: string }>(),
   };
 
   private readonly fileWatchCallbacks = new Map<string, () => void>();
 
   public constructor(tsconfigPath: string, extraFileExtensions: string[]) {
+    this.tsconfigPath = tsconfigPath;
     this.extraFileExtensions = extraFileExtensions;
     this.watch = this.createWatch(tsconfigPath, extraFileExtensions);
   }
 
   public getProgram(code: string, filePath: string): ts.Program {
-    const lastTargetFilePath = this.currTarget.filePath;
+    const normalized = normalizeFileName(
+      toRealFileName(filePath, this.extraFileExtensions)
+    );
+    const lastTarget = this.currTarget;
+
+    const dirMap = new Map<string, { name: string; path: string }>();
+    let childPath = normalized;
+    for (const dirName of iterateDirs(normalized)) {
+      dirMap.set(dirName, { path: childPath, name: path.basename(childPath) });
+      childPath = dirName;
+    }
     this.currTarget = {
       code,
-      filePath,
+      filePath: normalized,
+      dirMap,
     };
-    const refreshTargetPaths = [filePath, lastTargetFilePath].filter((s) => s);
-    for (const targetPath of refreshTargetPaths) {
+    for (const { filePath: targetPath } of [this.currTarget, lastTarget]) {
+      if (!targetPath) continue;
+      if (!ts.sys.fileExists(targetPath)) {
+        // Signal a directory change to request a re-scan of the directory
+        // because it targets a file that does not actually exist.
+        this.fileWatchCallbacks.get(normalizeFileName(this.tsconfigPath))?.();
+      }
       getFileNamesIncludingVirtualTSX(
         targetPath,
         this.extraFileExtensions
@@ -84,9 +103,7 @@ export class TSService {
     tsconfigPath: string,
     extraFileExtensions: string[]
   ): ts.WatchOfConfigFile<ts.BuilderProgram> {
-    const normalizedTsconfigPaths = new Set([
-      normalizeFileName(toAbsolutePath(tsconfigPath)),
-    ]);
+    const normalizedTsconfigPaths = new Set([normalizeFileName(tsconfigPath)]);
     const watchCompilerHost = ts.createWatchCompilerHost(
       tsconfigPath,
       {
@@ -120,17 +137,41 @@ export class TSService {
       fileExists: watchCompilerHost.fileExists,
       // eslint-disable-next-line @typescript-eslint/unbound-method -- Store original
       readDirectory: watchCompilerHost.readDirectory,
+      // eslint-disable-next-line @typescript-eslint/unbound-method -- Store original
+      directoryExists: watchCompilerHost.directoryExists!,
+      // eslint-disable-next-line @typescript-eslint/unbound-method -- Store original
+      getDirectories: watchCompilerHost.getDirectories!,
     };
-    watchCompilerHost.readDirectory = (...args) => {
-      const results = original.readDirectory.call(watchCompilerHost, ...args);
+    watchCompilerHost.getDirectories = (dirName, ...args) => {
+      return distinctArray(
+        ...original.getDirectories.call(watchCompilerHost, dirName, ...args),
+        // Include the path to the target file if the target file does not actually exist.
+        this.currTarget.dirMap.get(normalizeFileName(dirName))?.name
+      );
+    };
+    watchCompilerHost.directoryExists = (dirName, ...args) => {
+      return (
+        original.directoryExists.call(watchCompilerHost, dirName, ...args) ||
+        // Include the path to the target file if the target file does not actually exist.
+        this.currTarget.dirMap.has(normalizeFileName(dirName))
+      );
+    };
+    watchCompilerHost.readDirectory = (dirName, ...args) => {
+      const results = original.readDirectory.call(
+        watchCompilerHost,
+        dirName,
+        ...args
+      );
 
-      return [
-        ...new Set(
-          results.map((result) =>
-            toVirtualTSXFileName(result, extraFileExtensions)
-          )
-        ),
-      ];
+      // Include the target file if the target file does not actually exist.
+      const file = this.currTarget.dirMap.get(normalizeFileName(dirName));
+      if (file && file.path === this.currTarget.filePath) {
+        results.push(file.path);
+      }
+
+      return distinctArray(...results).map((result) =>
+        toVirtualTSXFileName(result, extraFileExtensions)
+      );
     };
     watchCompilerHost.readFile = (fileName, ...args) => {
       const realFileName = toRealFileName(fileName, extraFileExtensions);
@@ -151,12 +192,14 @@ export class TSService {
       if (!code) {
         return code;
       }
+      // If it's tsconfig, it will take care of rewriting the `include`.
       if (normalizedTsconfigPaths.has(normalized)) {
         const configJson = ts.parseConfigFileTextToJson(realFileName, code);
         if (!configJson.config) {
           return code;
         }
         if (configJson.config.extends) {
+          // If it references another tsconfig, rewrite the `include` for that file as well.
           for (const extendConfigPath of [configJson.config.extends].flat()) {
             normalizedTsconfigPaths.add(
               normalizeFileName(
@@ -184,12 +227,28 @@ export class TSService {
       });
     };
     // Modify it so that it can be determined that the virtual file actually exists.
-    watchCompilerHost.fileExists = (fileName, ...args) =>
-      original.fileExists.call(
+    watchCompilerHost.fileExists = (fileName, ...args) => {
+      const normalizedFileName = normalizeFileName(fileName);
+
+      // Even if it is actually a file, if it is specified as a directory to the target file,
+      // it is assumed that it does not exist as a file.
+      if (this.currTarget.dirMap.has(normalizedFileName)) {
+        return false;
+      }
+      const normalizedRealFileName = toRealFileName(
+        normalizedFileName,
+        extraFileExtensions
+      );
+      if (this.currTarget.filePath === normalizedRealFileName) {
+        // It is the file currently being parsed.
+        return true;
+      }
+      return original.fileExists.call(
         watchCompilerHost,
         toRealFileName(fileName, extraFileExtensions),
         ...args
       );
+    };
 
     // It keeps a callback to mark the parsed file as changed so that it can be reparsed.
     watchCompilerHost.watchFile = (fileName, callback) => {
@@ -205,11 +264,13 @@ export class TSService {
       };
     };
     // Use watchCompilerHost but don't actually watch the files and directories.
-    watchCompilerHost.watchDirectory = () => ({
-      close() {
-        // noop
-      },
-    });
+    watchCompilerHost.watchDirectory = () => {
+      return {
+        close: () => {
+          // noop
+        },
+      };
+    };
 
     /**
      * It heavily references typescript-eslint.
@@ -278,13 +339,32 @@ function normalizeFileName(fileName: string) {
     normalized = normalized.slice(0, -1);
   }
   if (ts.sys.useCaseSensitiveFileNames) {
-    return normalized;
+    return toAbsolutePath(normalized, null);
   }
-  return normalized.toLowerCase();
+  return toAbsolutePath(normalized.toLowerCase(), null);
 }
 
-function toAbsolutePath(filePath: string, baseDir?: string) {
+function toAbsolutePath(filePath: string, baseDir: string | null) {
   return path.isAbsolute(filePath)
     ? filePath
     : path.join(baseDir || process.cwd(), filePath);
+}
+
+function* iterateDirs(filePath: string) {
+  let target = filePath;
+  let parent: string;
+  while ((parent = path.dirname(target)) !== target) {
+    yield parent;
+    target = parent;
+  }
+}
+
+function distinctArray(...list: (string | null | undefined)[]) {
+  return [
+    ...new Set(
+      ts.sys.useCaseSensitiveFileNames
+        ? list.map((s) => s?.toLowerCase())
+        : list
+    ),
+  ].filter((s): s is string => s != null);
 }
