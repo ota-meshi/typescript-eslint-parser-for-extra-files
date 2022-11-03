@@ -1,5 +1,11 @@
 # typescript-eslint-parser-for-extra-files
 
+## 0.1.0
+
+### Minor Changes
+
+- [#9](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/pull/9) [`cc2a577`](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/commit/cc2a577fe87af4dec775ec5caa9fd39adf2f59b4) Thanks [@ota-meshi](https://github.com/ota-meshi)! - feat: add support for non-existent file parsing
+
 ## 0.0.3
 
 ### Patch Changes
