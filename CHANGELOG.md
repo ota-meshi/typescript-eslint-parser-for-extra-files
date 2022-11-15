@@ -1,5 +1,11 @@
 # typescript-eslint-parser-for-extra-files
 
+## 0.1.1
+
+### Patch Changes
+
+- [#11](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/pull/11) [`0e6544a`](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/commit/0e6544aa8ae1b1cd54680e79c7dcd67b110d3857) Thanks [@ota-meshi](https://github.com/ota-meshi)! - fix: bug for useCaseSensitiveFileNames
+
 ## 0.1.0
 
 ### Minor Changes
