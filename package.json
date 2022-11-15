@@ -1,6 +1,6 @@
 {
   "name": "typescript-eslint-parser-for-extra-files",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An experimental ESLint custom parser for Vue, Svelte, and Astro for use with TypeScript. It provides type information in combination with each framework's ESLint custom parser.",
   "repository": "git+https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files.git",
   "homepage": "https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files#readme",
