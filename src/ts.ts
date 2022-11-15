@@ -363,8 +363,8 @@ function distinctArray(...list: (string | null | undefined)[]) {
   return [
     ...new Set(
       ts.sys.useCaseSensitiveFileNames
-        ? list.map((s) => s?.toLowerCase())
-        : list
+        ? list
+        : list.map((s) => s?.toLowerCase())
     ),
   ].filter((s): s is string => s != null);
 }
