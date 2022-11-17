@@ -1,5 +1,11 @@
 # typescript-eslint-parser-for-extra-files
 
+## 0.1.2
+
+### Patch Changes
+
+- [#14](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/pull/14) [`717ba6c`](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/commit/717ba6c34966157cdfbc4e0f13310429882c35c1) Thanks [@ota-meshi](https://github.com/ota-meshi)! - fix: wrong type when d.ts file exists
+
 ## 0.1.1
 
 ### Patch Changes
