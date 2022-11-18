@@ -1,5 +1,11 @@
 # typescript-eslint-parser-for-extra-files
 
+## 0.1.3
+
+### Patch Changes
+
+- [#16](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/pull/16) [`eb02b08`](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/commit/eb02b08a958d884582903af2edaaf3725fc0fed2) Thanks [@ota-meshi](https://github.com/ota-meshi)! - fix: file was not found error when d.ts exist
+
 ## 0.1.2
 
 ### Patch Changes
