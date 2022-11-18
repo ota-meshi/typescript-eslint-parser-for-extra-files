@@ -45,7 +45,7 @@
     "release": "changeset publish",
     "test": "yarn mocha \"tests/src/**/*.ts\" --reporter dot --timeout 60000",
     "ts": "node -r esbuild-register",
-    "update-fixture": "yarn mocha \"tests/src/**/*.ts\" --update --reporter dot --timeout 60000"
+    "update-fixture": "yarn mocha \"tests/src/**/types.ts\" --update --reporter dot --timeout 60000"
   },
   "peerDependencies": {
     "@typescript-eslint/parser": ">=5.41.0",
