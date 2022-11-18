@@ -53,7 +53,14 @@ export class TSService {
     dirMap: new Map<string, { name: string; path: string }>(),
   };
 
-  private readonly fileWatchCallbacks = new Map<string, () => void>();
+  private readonly fileWatchCallbacks = new Map<
+    string,
+    {
+      setupTarget: () => void;
+      resetTarget: () => void;
+      update: () => void;
+    }
+  >();
 
   public constructor(tsconfigPath: string, extraFileExtensions: string[]) {
     this.tsconfigPath = tsconfigPath;
@@ -83,18 +90,28 @@ export class TSService {
       if (!ts.sys.fileExists(targetPath)) {
         // Signal a directory change to request a re-scan of the directory
         // because it targets a file that does not actually exist.
-        this.fileWatchCallbacks.get(normalizeFileName(this.tsconfigPath))?.();
+        this.fileWatchCallbacks
+          .get(normalizeFileName(this.tsconfigPath))
+          ?.update();
       }
-      getRefreshTargetFileNames(targetPath, this.extraFileExtensions).forEach(
-        (vFilePath) => {
-          this.fileWatchCallbacks.get(vFilePath)?.();
-        }
-      );
     }
+    getRefreshTargetFileNames(
+      lastTarget.filePath,
+      this.extraFileExtensions
+    ).forEach((vFilePath) => {
+      this.fileWatchCallbacks.get(vFilePath)?.resetTarget();
+    });
+    getRefreshTargetFileNames(
+      this.currTarget.filePath,
+      this.extraFileExtensions
+    ).forEach((vFilePath) => {
+      this.fileWatchCallbacks.get(vFilePath)?.setupTarget();
+    });
 
     const program = this.watch.getProgram().getProgram();
     // sets parent pointers in source files
     program.getTypeChecker();
+
     return program;
   }
 
@@ -168,18 +185,9 @@ export class TSService {
         results.push(file.path);
       }
 
-      return distinctArray(...results).map((result) => {
-        if (!isExtra(result, extraFileExtensions)) {
-          return result;
-        }
-
-        if (original.fileExists.call(watchCompilerHost, `${result}.d.ts`)) {
-          // If the d.ts file exists, respect it and consider the virtual file not to exist.
-          return result;
-        }
-
-        return toVirtualTSXFileName(result, extraFileExtensions);
-      });
+      return distinctArray(...results).map((result) =>
+        toVirtualTSXFileName(result, extraFileExtensions)
+      );
     };
     watchCompilerHost.readFile = (fileName, ...args) => {
       const realFileName = toRealFileName(fileName, extraFileExtensions);
@@ -190,6 +198,23 @@ export class TSService {
           filePath: normalized,
           current: true,
         });
+      }
+      if (isExtraDts(fileName, extraFileExtensions)) {
+        const real = normalizeFileName(
+          extraDtsToExtra(fileName, extraFileExtensions)
+        );
+        if (this.currTarget.filePath === real) {
+          // If try to read the .d.ts of the target file,
+          // respect the target file and consider the .d.ts doesn't exist.
+          return undefined;
+        }
+      }
+      if (isVirtualTSX(fileName, extraFileExtensions)) {
+        const dts = toExtraDtsFileName(normalized, extraFileExtensions);
+        if (original.fileExists.call(watchCompilerHost, dts)) {
+          // If the .d.ts file exists, respect it and consider the virtual file not to exist.
+          return undefined;
+        }
       }
 
       const code = original.readFile.call(
@@ -251,11 +276,20 @@ export class TSService {
         // It is the file currently being parsed.
         return true;
       }
-      const real = toRealFileName(fileName, extraFileExtensions);
-      if (original.fileExists.call(watchCompilerHost, real, ...args)) {
-        if (real !== fileName) {
+      if (
+        original.fileExists.call(
+          watchCompilerHost,
+          normalizedRealFileName,
+          ...args
+        )
+      ) {
+        if (isVirtualTSX(fileName, extraFileExtensions)) {
           if (
-            original.fileExists.call(watchCompilerHost, `${real}.d.ts`, ...args)
+            original.fileExists.call(
+              watchCompilerHost,
+              toExtraDtsFileName(normalizedRealFileName, extraFileExtensions),
+              ...args
+            )
           ) {
             // If the d.ts file exists, respect it and consider the virtual file not to exist.
             return false;
@@ -269,9 +303,30 @@ export class TSService {
     // It keeps a callback to mark the parsed file as changed so that it can be reparsed.
     watchCompilerHost.watchFile = (fileName, callback) => {
       const normalized = normalizeFileName(fileName);
-      this.fileWatchCallbacks.set(normalized, () =>
-        callback(fileName, ts.FileWatcherEventKind.Changed)
-      );
+      this.fileWatchCallbacks.set(normalized, {
+        // The function is called when the file is targeted for parsing.
+        setupTarget: () => {
+          if (isExtraDts(fileName, extraFileExtensions)) {
+            callback(fileName, ts.FileWatcherEventKind.Deleted);
+          } else if (isVirtualTSX(fileName, extraFileExtensions)) {
+            callback(fileName, ts.FileWatcherEventKind.Created);
+          } else {
+            callback(fileName, ts.FileWatcherEventKind.Changed);
+          }
+        },
+        // The function is called when the file leaves the target of parsing.
+        resetTarget: () => {
+          if (isExtraDts(fileName, extraFileExtensions)) {
+            // If the .d.ts file exists, it will take respect.
+            callback(fileName, ts.FileWatcherEventKind.Created);
+          } else if (isVirtualTSX(fileName, extraFileExtensions)) {
+            callback(fileName, ts.FileWatcherEventKind.Deleted);
+          } else {
+            callback(fileName, ts.FileWatcherEventKind.Changed);
+          }
+        },
+        update: () => callback(fileName, ts.FileWatcherEventKind.Changed),
+      });
 
       return {
         close: () => {
@@ -322,7 +377,7 @@ function getRefreshTargetFileNames(
   return [fileName];
 }
 
-/** If the given filename has extra file extensions, returns the real virtual filename. */
+/** If the given filename has extra extensions, returns the real virtual filename. */
 function toVirtualTSXFileName(fileName: string, extraFileExtensions: string[]) {
   if (isExtra(fileName, extraFileExtensions)) {
     return `${fileName}.tsx`;
@@ -330,20 +385,60 @@ function toVirtualTSXFileName(fileName: string, extraFileExtensions: string[]) {
   return fileName;
 }
 
-/** If the given filename is a virtual filename (.vue.tsx), returns the real filename. */
-function toRealFileName(fileName: string, extraFileExtensions: string[]) {
-  for (const extraFileExtension of extraFileExtensions) {
-    if (fileName.endsWith(`${extraFileExtension}.tsx`)) {
-      return fileName.slice(0, -4);
-    }
+/** If the given filename has extra extensions, returns the d.ts filename. */
+function toExtraDtsFileName(fileName: string, extraFileExtensions: string[]) {
+  if (isExtra(fileName, extraFileExtensions)) {
+    return `${fileName}.d.ts`;
   }
   return fileName;
 }
 
-/** Checks the given filename has extra file extension or not. */
+/** If the given filename is a virtual filename (.vue.tsx), returns the real filename. */
+function toRealFileName(fileName: string, extraFileExtensions: string[]) {
+  if (isVirtualTSX(fileName, extraFileExtensions)) {
+    return fileName.slice(0, -4);
+  }
+  return fileName;
+}
+
+/** If the given filename is has extra extension with d.ts, returns the real filename. */
+function extraDtsToExtra(
+  fileName: string,
+  extraFileExtensions: string[]
+): string {
+  if (isExtraDts(fileName, extraFileExtensions)) {
+    return fileName.slice(0, -5);
+  }
+  return fileName;
+}
+
+/** Checks the given filename has extra extension or not. */
 function isExtra(fileName: string, extraFileExtensions: string[]): boolean {
   for (const extraFileExtension of extraFileExtensions) {
     if (fileName.endsWith(extraFileExtension)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/** Checks the given filename is virtual file tsx or not. */
+function isVirtualTSX(
+  fileName: string,
+  extraFileExtensions: string[]
+): boolean {
+  for (const extraFileExtension of extraFileExtensions) {
+    if (fileName.endsWith(`${extraFileExtension}.tsx`)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/** Checks the given filename has extra extension with d.ts or not. */
+function isExtraDts(fileName: string, extraFileExtensions: string[]): boolean {
+  for (const extraFileExtension of extraFileExtensions) {
+    if (fileName.endsWith(`${extraFileExtension}.d.ts`)) {
       return true;
     }
   }
