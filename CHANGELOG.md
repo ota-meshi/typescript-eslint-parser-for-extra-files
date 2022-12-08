@@ -1,5 +1,11 @@
 # typescript-eslint-parser-for-extra-files
 
+## 0.1.4
+
+### Patch Changes
+
+- [#19](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/pull/19) [`2f63cdc`](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/commit/2f63cdcdd2e8ec9915e066015c4fac1bad39b000) Thanks [@ota-meshi](https://github.com/ota-meshi)! - fix: svelte type
+
 ## 0.1.3
 
 ### Patch Changes
