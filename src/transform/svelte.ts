@@ -13,5 +13,7 @@ export function transformForSvelte(
     filename: context.filePath,
   });
 
-  return result.code;
+  return `/// <reference types="svelte2tsx/svelte-shims" />
+  
+${result.code}`;
 }
