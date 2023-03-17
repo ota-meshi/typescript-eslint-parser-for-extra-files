@@ -2,6 +2,7 @@ import type { ParserOptions } from "@typescript-eslint/parser";
 import type { ProgramOptions } from "./ts";
 import { TSServiceManager } from "./ts";
 import * as tsEslintParser from "@typescript-eslint/parser";
+import { getProjectConfigFiles } from "./utils/get-project-config-files";
 
 const DEFAULT_EXTRA_FILE_EXTENSIONS = [".vue", ".svelte", ".astro"];
 const tsServiceManager = new TSServiceManager();
@@ -47,9 +48,7 @@ function* iterateOptions(options: ParserOptions): Iterable<ProgramOptions> {
       "Specify `parserOptions.project`. Otherwise there is no point in using this parser."
     );
   }
-  for (const project of Array.isArray(options.project)
-    ? options.project
-    : [options.project]) {
+  for (const project of getProjectConfigFiles(options)) {
     yield {
       project,
       filePath: options.filePath,
