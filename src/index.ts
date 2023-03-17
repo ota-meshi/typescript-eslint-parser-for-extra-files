@@ -7,6 +7,8 @@ import { getProjectConfigFiles } from "./utils/get-project-config-files";
 const DEFAULT_EXTRA_FILE_EXTENSIONS = [".vue", ".svelte", ".astro"];
 const tsServiceManager = new TSServiceManager();
 
+export const name = "typescript-eslint-parser-for-extra-files";
+
 export function parseForESLint(
   code: string,
   options: ParserOptions = {}
