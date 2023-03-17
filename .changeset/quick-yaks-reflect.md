@@ -1,5 +1,5 @@
 ---
-"typescript-eslint-parser-for-extra-files": patch
+"typescript-eslint-parser-for-extra-files": minor
 ---
 
 feat: export name property
