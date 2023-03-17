@@ -1,5 +1,13 @@
 # typescript-eslint-parser-for-extra-files
 
+## 0.2.0
+
+### Minor Changes
+
+- [#29](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/pull/29) [`fa10512`](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/commit/fa10512d2a88b890671d39a85b87c5ab7e3d1960) Thanks [@ota-meshi](https://github.com/ota-meshi)! - feat: export name property
+
+- [#30](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/pull/30) [`d0d7347`](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/commit/d0d7347fd5efa8a3986134ea8bac2e2703eeaace) Thanks [@ota-meshi](https://github.com/ota-meshi)! - feat: support for boolean project option
+
 ## 0.1.4
 
 ### Patch Changes
