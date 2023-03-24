@@ -1,5 +1,11 @@
 # typescript-eslint-parser-for-extra-files
 
+## 0.3.0
+
+### Minor Changes
+
+- [#34](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/pull/34) [`b1e064b`](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/commit/b1e064bd6a242f4048e01c69083df43ebb571d48) Thanks [@ota-meshi](https://github.com/ota-meshi)! - feat: remove tsconfig patch and virtual filename
+
 ## 0.2.0
 
 ### Minor Changes
