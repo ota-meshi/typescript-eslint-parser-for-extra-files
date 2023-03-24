@@ -152,6 +152,7 @@ export class TSService {
             this.currTarget.filePath === normalizeFileName(fileName) &&
             isExtra(fileName, extraFileExtensions)
           ) {
+            // Parse the target file as TSX.
             return (this.currTarget.sourceFile ??= ts.createSourceFile(
               this.currTarget.filePath,
               this.currTarget.code,
@@ -170,6 +171,7 @@ export class TSService {
         };
         /* eslint-enable @typescript-eslint/unbound-method -- ignore */
         host.getSourceFile = (fileName, languageVersionOrOptions, ...args) => {
+          // Always call the original function, because it calls the file watcher.
           const originalSourceFile = original.getSourceFile.call(
             host,
             fileName,
@@ -187,6 +189,7 @@ export class TSService {
           languageVersionOrOptions,
           ...args
         ) => {
+          // Always call the original function, because it calls the file watcher.
           const originalSourceFile = original.getSourceFileByPath.call(
             host,
             fileName,
