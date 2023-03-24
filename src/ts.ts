@@ -292,16 +292,6 @@ export class TSService {
           current: true,
         });
       }
-      if (isExtraDts(fileName, extraFileExtensions)) {
-        const real = normalizeFileName(
-          extraDtsToExtra(fileName, extraFileExtensions)
-        );
-        if (this.currTarget.filePath === real) {
-          // If try to read the .d.ts of the target file,
-          // respect the target file and consider the .d.ts doesn't exist.
-          return undefined;
-        }
-      }
       if (isVirtualTSX(fileName, extraFileExtensions)) {
         const dts = toExtraDtsFileName(normalized, extraFileExtensions);
         if (original.fileExists.call(watchCompilerHost, dts)) {
@@ -453,17 +443,6 @@ function toExtraDtsFileName(fileName: string, extraFileExtensions: string[]) {
 function toRealFileName(fileName: string, extraFileExtensions: string[]) {
   if (isVirtualTSX(fileName, extraFileExtensions)) {
     return fileName.slice(0, -4);
-  }
-  return fileName;
-}
-
-/** If the given filename is has extra extension with d.ts, returns the real filename. */
-function extraDtsToExtra(
-  fileName: string,
-  extraFileExtensions: string[]
-): string {
-  if (isExtraDts(fileName, extraFileExtensions)) {
-    return fileName.slice(0, -5);
   }
   return fileName;
 }
