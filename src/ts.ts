@@ -43,11 +43,18 @@ export class TSServiceManager {
 export class TSService {
   private readonly watch: ts.WatchOfConfigFile<ts.BuilderProgram>;
 
+  private readonly patchedHostSet = new WeakSet<ts.CompilerHost>();
+
   private readonly tsconfigPath: string;
 
   public readonly extraFileExtensions: string[];
 
-  private currTarget = {
+  private currTarget: {
+    code: string;
+    filePath: string;
+    sourceFile?: ts.SourceFile;
+    dirMap: Map<string, { name: string; path: string }>;
+  } = {
     code: "",
     filePath: "",
     dirMap: new Map<string, { name: string; path: string }>(),
@@ -119,7 +126,90 @@ export class TSService {
     tsconfigPath: string,
     extraFileExtensions: string[]
   ): ts.WatchOfConfigFile<ts.BuilderProgram> {
-    const normalizedTsconfigPaths = new Set([normalizeFileName(tsconfigPath)]);
+    type CreateProgram = ts.CreateProgram<ts.BuilderProgram>;
+
+    const createAbstractBuilder = (
+      ...args: Parameters<CreateProgram>
+    ): ReturnType<CreateProgram> => {
+      const [
+        rootNames,
+        options,
+        argHost,
+        oldProgram,
+        configFileParsingDiagnostics,
+        projectReferences,
+      ] = args;
+
+      const host: ts.CompilerHost = argHost!;
+      if (!this.patchedHostSet.has(host)) {
+        this.patchedHostSet.add(host);
+
+        const getTargetSourceFile = (
+          fileName: string,
+          languageVersionOrOptions: ts.ScriptTarget | ts.CreateSourceFileOptions
+        ) => {
+          if (
+            this.currTarget.filePath === normalizeFileName(fileName) &&
+            isExtra(fileName, extraFileExtensions)
+          ) {
+            return (this.currTarget.sourceFile ??= ts.createSourceFile(
+              this.currTarget.filePath,
+              this.currTarget.code,
+              languageVersionOrOptions,
+              true,
+              ts.ScriptKind.TSX
+            ));
+          }
+          return null;
+        };
+
+        /* eslint-disable @typescript-eslint/unbound-method -- ignore */
+        const original = {
+          getSourceFile: host.getSourceFile,
+          getSourceFileByPath: host.getSourceFileByPath!,
+        };
+        /* eslint-enable @typescript-eslint/unbound-method -- ignore */
+        host.getSourceFile = (fileName, languageVersionOrOptions, ...args) => {
+          const originalSourceFile = original.getSourceFile.call(
+            host,
+            fileName,
+            languageVersionOrOptions,
+            ...args
+          );
+          return (
+            getTargetSourceFile(fileName, languageVersionOrOptions) ??
+            originalSourceFile
+          );
+        };
+        host.getSourceFileByPath = (
+          fileName,
+          path,
+          languageVersionOrOptions,
+          ...args
+        ) => {
+          const originalSourceFile = original.getSourceFileByPath.call(
+            host,
+            fileName,
+            path,
+            languageVersionOrOptions,
+            ...args
+          );
+          return (
+            getTargetSourceFile(fileName, languageVersionOrOptions) ??
+            originalSourceFile
+          );
+        };
+      }
+      return ts.createAbstractBuilder(
+        rootNames,
+        options,
+        host,
+        oldProgram,
+        configFileParsingDiagnostics,
+        projectReferences
+      );
+    };
+
     const watchCompilerHost = ts.createWatchCompilerHost(
       tsconfigPath,
       {
@@ -132,19 +222,19 @@ export class TSService {
         allowNonTsExtensions: true,
       },
       ts.sys,
-      ts.createAbstractBuilder,
+      createAbstractBuilder,
       (diagnostic) => {
         throw new Error(formatDiagnostics([diagnostic]));
       },
       () => {
         // Not reported in reportWatchStatus.
       },
-      undefined
-      // extraFileExtensions.map((extension) => ({
-      //   extension,
-      //   isMixedContent: true,
-      //   scriptKind: ts.ScriptKind.Deferred,
-      // }))
+      undefined,
+      extraFileExtensions.map((extension) => ({
+        extension,
+        isMixedContent: true,
+        scriptKind: ts.ScriptKind.Deferred,
+      }))
     );
     const original = {
       // eslint-disable-next-line @typescript-eslint/unbound-method -- Store original
@@ -159,11 +249,12 @@ export class TSService {
       getDirectories: watchCompilerHost.getDirectories!,
     };
     watchCompilerHost.getDirectories = (dirName, ...args) => {
-      return distinctArray(
+      const result = distinctArray(
         ...original.getDirectories.call(watchCompilerHost, dirName, ...args),
         // Include the path to the target file if the target file does not actually exist.
         this.currTarget.dirMap.get(normalizeFileName(dirName))?.name
       );
+      return result;
     };
     watchCompilerHost.directoryExists = (dirName, ...args) => {
       return (
@@ -173,7 +264,7 @@ export class TSService {
       );
     };
     watchCompilerHost.readDirectory = (dirName, ...args) => {
-      const results = original.readDirectory.call(
+      let results = original.readDirectory.call(
         watchCompilerHost,
         dirName,
         ...args
@@ -181,13 +272,15 @@ export class TSService {
 
       // Include the target file if the target file does not actually exist.
       const file = this.currTarget.dirMap.get(normalizeFileName(dirName));
-      if (file && file.path === this.currTarget.filePath) {
-        results.push(file.path);
+      if (file) {
+        if (file.path === this.currTarget.filePath) {
+          results.push(file.path);
+        } else {
+          results = results.filter((f) => file.path !== f && file.name !== f);
+        }
       }
 
-      return distinctArray(...results).map((result) =>
-        toVirtualTSXFileName(result, extraFileExtensions)
-      );
+      return distinctArray(...results);
     };
     watchCompilerHost.readFile = (fileName, ...args) => {
       const realFileName = toRealFileName(fileName, extraFileExtensions);
@@ -224,35 +317,6 @@ export class TSService {
       );
       if (!code) {
         return code;
-      }
-      // If it's tsconfig, it will take care of rewriting the `include`.
-      if (normalizedTsconfigPaths.has(normalized)) {
-        const configJson = ts.parseConfigFileTextToJson(realFileName, code);
-        if (!configJson.config) {
-          return code;
-        }
-        if (configJson.config.extends) {
-          // If it references another tsconfig, rewrite the `include` for that file as well.
-          for (const extendConfigPath of [configJson.config.extends].flat()) {
-            normalizedTsconfigPaths.add(
-              normalizeFileName(
-                toAbsolutePath(extendConfigPath, path.dirname(normalized))
-              )
-            );
-          }
-        }
-
-        if (!configJson.config.include) {
-          return code;
-        }
-        const include = [configJson.config.include]
-          .flat()
-          .map((s) => toVirtualTSXFileName(s, extraFileExtensions));
-
-        return JSON.stringify({
-          ...configJson.config,
-          include,
-        });
       }
       return transformExtraFile(code, {
         filePath: normalized,
@@ -375,14 +439,6 @@ function getRefreshTargetFileNames(
     return [`${fileName}.tsx`, `${fileName}.d.ts`, fileName];
   }
   return [fileName];
-}
-
-/** If the given filename has extra extensions, returns the real virtual filename. */
-function toVirtualTSXFileName(fileName: string, extraFileExtensions: string[]) {
-  if (isExtra(fileName, extraFileExtensions)) {
-    return `${fileName}.tsx`;
-  }
-  return fileName;
 }
 
 /** If the given filename has extra extensions, returns the d.ts filename. */

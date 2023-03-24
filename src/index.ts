@@ -22,13 +22,7 @@ export function parseForESLint(
   for (const option of iterateOptions(options)) {
     programs.push(tsServiceManager.getProgram(code, option));
   }
-  let filePath = options.filePath;
-  if (
-    filePath &&
-    extraFileExtensions.some((ext) => options.filePath?.endsWith(ext))
-  ) {
-    filePath = `${filePath}.tsx`;
-  }
+  const filePath = options.filePath;
   const parserOptions = {
     ...options,
     filePath,
