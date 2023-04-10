@@ -1,5 +1,11 @@
 # typescript-eslint-parser-for-extra-files
 
+## 0.4.0
+
+### Minor Changes
+
+- [#38](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/pull/38) [`c371d09`](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/commit/c371d094f03c425bdf55b262aaaa9f9ed539e160) Thanks [@ota-meshi](https://github.com/ota-meshi)! - refactor
+
 ## 0.3.0
 
 ### Minor Changes
