@@ -1,5 +1,11 @@
 # typescript-eslint-parser-for-extra-files
 
+## 0.5.0
+
+### Minor Changes
+
+- [#43](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/pull/43) [`e3ab317`](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/commit/e3ab317f290efc26dab06bf6f164724e9199cdba) Thanks [@ota-meshi](https://github.com/ota-meshi)! - feat: export meta object
+
 ## 0.4.0
 
 ### Minor Changes
