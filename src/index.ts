@@ -3,11 +3,11 @@ import type { ProgramOptions } from "./ts";
 import { TSServiceManager } from "./ts";
 import * as tsEslintParser from "@typescript-eslint/parser";
 import { getProjectConfigFiles } from "./utils/get-project-config-files";
+export * as meta from "./meta";
+export { name } from "./meta";
 
 const DEFAULT_EXTRA_FILE_EXTENSIONS = [".vue", ".svelte", ".astro"];
 const tsServiceManager = new TSServiceManager();
-
-export const name = "typescript-eslint-parser-for-extra-files";
 
 export function parseForESLint(
   code: string,
