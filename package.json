@@ -106,7 +106,7 @@
     "semver": "^7.3.5",
     "svelte": "^3.52.0",
     "svelte2tsx": "^0.6.0",
-    "tsup": "^6.3.0",
+    "tsup": "^7.0.0",
     "typescript": "~5.1.0",
     "vue": "^3.2.41",
     "vue-eslint-parser": "^9.1.0"
