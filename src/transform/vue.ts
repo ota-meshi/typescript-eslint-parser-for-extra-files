@@ -2,7 +2,7 @@ import type * as compilerSfc from "vue/compiler-sfc";
 import type { ExtraFileTransformerContext } from "../ts";
 export function transformForVue(
   code: string,
-  context: ExtraFileTransformerContext
+  context: ExtraFileTransformerContext,
 ): string {
   if (context.current) {
     return code;

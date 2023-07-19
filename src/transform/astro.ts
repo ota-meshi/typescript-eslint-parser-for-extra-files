@@ -3,7 +3,7 @@ import type { ExtraFileTransformerContext } from "../ts";
 
 export function transformForAstro(
   code: string,
-  context: ExtraFileTransformerContext
+  context: ExtraFileTransformerContext,
 ): string {
   if (context.current) {
     return code;

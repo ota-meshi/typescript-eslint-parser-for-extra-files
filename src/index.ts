@@ -11,7 +11,7 @@ const tsServiceManager = new TSServiceManager();
 
 export function parseForESLint(
   code: string,
-  options: ParserOptions = {}
+  options: ParserOptions = {},
 ): ReturnType<typeof tsEslintParser.parseForESLint> {
   if (!options.project) {
     return tsEslintParser.parseForESLint(code, options);
@@ -41,7 +41,7 @@ function* iterateOptions(options: ParserOptions): Iterable<ProgramOptions> {
   }
   if (!options.project) {
     throw new Error(
-      "Specify `parserOptions.project`. Otherwise there is no point in using this parser."
+      "Specify `parserOptions.project`. Otherwise there is no point in using this parser.",
     );
   }
   for (const project of getProjectConfigFiles(options)) {

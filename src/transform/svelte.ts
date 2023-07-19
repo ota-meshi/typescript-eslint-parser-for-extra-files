@@ -2,7 +2,7 @@ import type * as Svelte2tsx from "svelte2tsx";
 import type { ExtraFileTransformerContext } from "../ts";
 export function transformForSvelte(
   code: string,
-  context: ExtraFileTransformerContext
+  context: ExtraFileTransformerContext,
 ): string {
   if (context.current) {
     return code;
