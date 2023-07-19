@@ -102,7 +102,7 @@
     "prettier": "^3.0.0",
     "prettier-plugin-astro": "^0.11.0",
     "prettier-plugin-pkg": "^0.18.0",
-    "prettier-plugin-svelte": "^2.8.0",
+    "prettier-plugin-svelte": "^3.0",
     "semver": "^7.3.5",
     "svelte": "^4.0.0",
     "svelte2tsx": "^0.6.0",
