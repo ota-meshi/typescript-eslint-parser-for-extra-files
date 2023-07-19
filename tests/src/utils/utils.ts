@@ -6,7 +6,7 @@ const PROJECT_ROOT = path.join(__dirname, "../../..");
 
 export function buildTypes(
   input: string,
-  result: ReturnType<typeof tsEslintParser.parseForESLint>
+  result: ReturnType<typeof tsEslintParser.parseForESLint>,
 ): string {
   const tsNodeMap = result.services.esTreeNodeToTSNodeMap;
   const checker =

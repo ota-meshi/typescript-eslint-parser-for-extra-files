@@ -6,7 +6,7 @@ import { transformForAstro } from "./astro";
 
 export function transformExtraFile(
   code: string,
-  context: ExtraFileTransformerContext
+  context: ExtraFileTransformerContext,
 ): string {
   const ext = path.extname(context.filePath);
   const transform =

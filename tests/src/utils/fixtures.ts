@@ -16,7 +16,7 @@ export function iterateFixtures(baseDir: string): Iterable<{
 
 function* iterateFixturesWithTsConfig(
   baseDir: string,
-  parentTsconfigPath: string
+  parentTsconfigPath: string,
 ): Iterable<{
   name: string;
   filePath: string;
@@ -46,7 +46,7 @@ function* iterateFixturesWithTsConfig(
       } else {
         for (const nest of iterateFixturesWithTsConfig(
           filePath,
-          tsconfigPath
+          tsconfigPath,
         )) {
           yield {
             name: `${filename}/${nest.name}`,

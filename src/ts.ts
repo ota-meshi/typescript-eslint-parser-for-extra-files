@@ -28,8 +28,8 @@ export class TSServiceManager {
 
     let service = serviceList.find((service) =>
       extraFileExtensions.every((ext) =>
-        service.extraFileExtensions.includes(ext)
-      )
+        service.extraFileExtensions.includes(ext),
+      ),
     );
     if (!service) {
       service = new TSService(tsconfigPath, extraFileExtensions);
@@ -109,7 +109,7 @@ export class TSService {
 
   private createWatch(
     tsconfigPath: string,
-    extraFileExtensions: string[]
+    extraFileExtensions: string[],
   ): ts.WatchOfConfigFile<ts.BuilderProgram> {
     type CreateProgram = ts.CreateProgram<ts.BuilderProgram>;
 
@@ -131,7 +131,9 @@ export class TSService {
 
         const getTargetSourceFile = (
           fileName: string,
-          languageVersionOrOptions: ts.ScriptTarget | ts.CreateSourceFileOptions
+          languageVersionOrOptions:
+            | ts.ScriptTarget
+            | ts.CreateSourceFileOptions,
         ) => {
           if (
             this.currTarget.filePath === normalizeFileName(fileName) &&
@@ -143,7 +145,7 @@ export class TSService {
               this.currTarget.code,
               languageVersionOrOptions,
               true,
-              ts.ScriptKind.TSX
+              ts.ScriptKind.TSX,
             ));
           }
           return null;
@@ -161,7 +163,7 @@ export class TSService {
             host,
             fileName,
             languageVersionOrOptions,
-            ...args
+            ...args,
           );
           return (
             getTargetSourceFile(fileName, languageVersionOrOptions) ??
@@ -180,7 +182,7 @@ export class TSService {
             fileName,
             path,
             languageVersionOrOptions,
-            ...args
+            ...args,
           );
           return (
             getTargetSourceFile(fileName, languageVersionOrOptions) ??
@@ -194,7 +196,7 @@ export class TSService {
         host,
         oldProgram,
         configFileParsingDiagnostics,
-        projectReferences
+        projectReferences,
       );
     };
 
@@ -222,7 +224,7 @@ export class TSService {
         extension,
         isMixedContent: true,
         scriptKind: ts.ScriptKind.Deferred,
-      }))
+      })),
     );
     const original = {
       // eslint-disable-next-line @typescript-eslint/unbound-method -- Store original
@@ -240,7 +242,7 @@ export class TSService {
       const result = distinctArray(
         ...original.getDirectories.call(watchCompilerHost, dirName, ...args),
         // Include the path to the target file if the target file does not actually exist.
-        this.currTarget.dirMap.get(normalizeFileName(dirName))?.name
+        this.currTarget.dirMap.get(normalizeFileName(dirName))?.name,
       );
       return result;
     };
@@ -255,7 +257,7 @@ export class TSService {
       let results = original.readDirectory.call(
         watchCompilerHost,
         dirName,
-        ...args
+        ...args,
       );
 
       // Include the target file if the target file does not actually exist.
@@ -286,7 +288,7 @@ export class TSService {
       const code = original.readFile.call(
         watchCompilerHost,
         realFileName,
-        ...args
+        ...args,
       );
       if (!code) {
         return code;
@@ -314,7 +316,7 @@ export class TSService {
       }
       const exists = original.fileExists.call(
         watchCompilerHost,
-        normalizedFileName
+        normalizedFileName,
       );
       if (exists) {
         return normalizedFileName;
@@ -364,7 +366,7 @@ export class TSService {
       const originalDiagnostics = program.getConfigFileParsingDiagnostics();
       const configFileDiagnostics = originalDiagnostics.filter(
         (diag) =>
-          diag.category === ts.DiagnosticCategory.Error && diag.code !== 18003
+          diag.category === ts.DiagnosticCategory.Error && diag.code !== 18003,
       );
       if (configFileDiagnostics.length > 0) {
         throw new Error(formatDiagnostics(configFileDiagnostics));
@@ -393,7 +395,7 @@ function isExtra(fileName: string, extraFileExtensions: string[]): boolean {
 /** Gets the file extension if the given file is an extra extension file. */
 function getExtIfExtra(
   fileName: string,
-  extraFileExtensions: string[]
+  extraFileExtensions: string[],
 ): string | null {
   for (const extraFileExtension of extraFileExtensions) {
     if (fileName.endsWith(extraFileExtension)) {
@@ -406,7 +408,7 @@ function getExtIfExtra(
 /** Checks the given filename is virtual file tsx or not. */
 function isVirtualTSX(
   fileName: string,
-  extraFileExtensions: string[]
+  extraFileExtensions: string[],
 ): boolean {
   for (const extraFileExtension of extraFileExtensions) {
     if (fileName.endsWith(`${extraFileExtension}.tsx`)) {
@@ -455,7 +457,7 @@ function distinctArray(...list: (string | null | undefined)[]) {
     ...new Set(
       ts.sys.useCaseSensitiveFileNames
         ? list
-        : list.map((s) => s?.toLowerCase())
+        : list.map((s) => s?.toLowerCase()),
     ),
   ].filter((s): s is string => s != null);
 }

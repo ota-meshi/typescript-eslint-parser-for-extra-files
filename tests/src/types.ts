@@ -37,7 +37,7 @@ const PARSER_OPTIONS = {
 
 describe("Template Types", () => {
   for (const { name, sourcePath, filePath, tsconfigPath } of iterateFixtures(
-    ROOT
+    ROOT,
   )) {
     // if (!sourcePath.endsWith(".ts")) continue;
     const optionsPath = path.join(filePath, `parser-options.json`);
@@ -53,7 +53,7 @@ describe("Template Types", () => {
       { filePath: sourcePath },
       PARSER_OPTIONS,
       { project: tsconfigPath },
-      parserOptions
+      parserOptions,
     );
 
     if (
@@ -81,7 +81,7 @@ describe("Template Types", () => {
             : path.extname(sourcePath) === ".ts"
             ? tsParser.parseForESLint(source, options)
             : vueParser.parseForESLint(source, options);
-        const actual = buildTypes(source, result as any);
+        const actual = buildTypes(source, result);
         const resultPath = sourcePath.replace(/source\.([a-z]+)$/u, "types.$1");
 
         if (process.argv.includes("--update")) {
@@ -97,7 +97,7 @@ describe("Template Types", () => {
         } catch (e) {
           fs.writeFileSync(
             sourcePath.replace(/source\.([a-z]+)$/u, "actual-types.$1"),
-            actual
+            actual,
           );
           throw e;
         }

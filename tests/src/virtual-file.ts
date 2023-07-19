@@ -35,7 +35,7 @@ const PARSER_OPTIONS = {
 
 describe("Virtual Files", () => {
   for (const { name, sourcePath, filePath, tsconfigPath } of iterateFixtures(
-    ROOT
+    ROOT,
   )) {
     // if (!sourcePath.endsWith(".ts")) continue;
     const optionsPath = path.join(filePath, `parser-options.json`);
@@ -51,7 +51,7 @@ describe("Virtual Files", () => {
       { filePath: sourcePath },
       PARSER_OPTIONS,
       { project: tsconfigPath },
-      parserOptions
+      parserOptions,
     );
 
     if (
@@ -68,7 +68,7 @@ describe("Virtual Files", () => {
     }
 
     describe(`'test/fixtures/vue/${name}/${path.basename(
-      options.filePath
+      options.filePath,
     )}/v.ts'`, () => {
       it("should be parsed to valid Types.", () => {
         const virtualSource = source.replace(/from "\./gu, 'from "../.');
@@ -83,7 +83,7 @@ describe("Virtual Files", () => {
 
         const actual = buildTypes(virtualSource, result as any).replace(
           /from "\.\.\/\./gu,
-          'from ".'
+          'from ".',
         );
         const resultPath = sourcePath.replace(/source\.([a-z]+)$/u, "types.$1");
         const expected = fs.readFileSync(resultPath, "utf8");
@@ -91,7 +91,7 @@ describe("Virtual Files", () => {
       });
     });
     describe(`'test/fixtures/vue/${name}/${path.basename(
-      options.filePath
+      options.filePath,
     )}/v/v.ts'`, () => {
       it("should be parsed to valid Types.", () => {
         const virtualSource = source.replace(/from "\./gu, 'from "../../.');
@@ -105,7 +105,7 @@ describe("Virtual Files", () => {
             : vueParser.parseForESLint(virtualSource, virtualOptions);
         const actual = buildTypes(virtualSource, result as any).replace(
           /from "\.\.\/\.\.\/\./gu,
-          'from ".'
+          'from ".',
         );
         const resultPath = sourcePath.replace(/source\.([a-z]+)$/u, "types.$1");
         const expected = fs.readFileSync(resultPath, "utf8");
@@ -113,7 +113,7 @@ describe("Virtual Files", () => {
       });
     });
     describe(`'test/fixtures/vue/${name}/${path.basename(
-      options.filePath
+      options.filePath,
     )}/v/v.vue'`, () => {
       it("should be parsed to valid Types.", () => {
         const virtualSource = source.replace(/from "\./gu, 'from "../../.');
@@ -127,7 +127,7 @@ describe("Virtual Files", () => {
             : vueParser.parseForESLint(virtualSource, virtualOptions);
         const actual = buildTypes(virtualSource, result as any).replace(
           /from "\.\.\/\.\.\/\./gu,
-          'from ".'
+          'from ".',
         );
         const resultPath = sourcePath.replace(/source\.([a-z]+)$/u, "types.$1");
         const expected = fs.readFileSync(resultPath, "utf8");
