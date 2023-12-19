@@ -101,7 +101,7 @@ npm install --save-dev astrojs-compiler-sync@latest @astrojs/compiler
                 "parser": "typescript-eslint-parser-for-extra-files",
                 // Or
                 // "parser": {
-                //     "ts": require("typescript-eslint-parser-for-extra-files"),
+                //     "ts": require("typescript-eslint-parser-for-extra-files")
                 // }
                 "project": "./tsconfig.json"
             },
