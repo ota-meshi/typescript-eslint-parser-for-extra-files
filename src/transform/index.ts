@@ -13,10 +13,10 @@ export function transformExtraFile(
     ext === ".vue"
       ? transformForVue
       : ext === ".svelte"
-      ? transformForSvelte
-      : ext === ".astro"
-      ? transformForAstro
-      : () => code;
+        ? transformForSvelte
+        : ext === ".astro"
+          ? transformForAstro
+          : () => code;
   try {
     return transform(code, context);
   } catch {

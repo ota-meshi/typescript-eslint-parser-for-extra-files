@@ -1,5 +1,6 @@
 <script setup lang="ts">
-let exposeA = $ref(1);
+import { ref } from "vue";
+let exposeA = ref(1);
 
 type Ret = {
   num: () => number;

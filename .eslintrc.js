@@ -77,33 +77,7 @@ module.exports = {
       files: ["*.ts"],
       parser: "@typescript-eslint/parser",
       rules: {
-        "@typescript-eslint/naming-convention": [
-          "error",
-          {
-            selector: "default",
-            format: ["camelCase"],
-            leadingUnderscore: "allow",
-            trailingUnderscore: "allow",
-          },
-          {
-            selector: "variable",
-            format: ["camelCase", "UPPER_CASE"],
-            leadingUnderscore: "allow",
-            trailingUnderscore: "allow",
-          },
-          {
-            selector: "typeLike",
-            format: ["PascalCase"],
-          },
-          {
-            selector: "property",
-            format: null,
-          },
-          {
-            selector: "method",
-            format: null,
-          },
-        ],
+        "@typescript-eslint/naming-convention": ["off"],
         "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/no-use-before-define": "off",
         "@typescript-eslint/no-explicit-any": "off",

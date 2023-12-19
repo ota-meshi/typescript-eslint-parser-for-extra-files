@@ -75,12 +75,12 @@ describe("Template Types", () => {
           path.extname(sourcePath) === ".vue"
             ? vueParser.parseForESLint(source, options)
             : path.extname(sourcePath) === ".svelte"
-            ? svelteParser.parseForESLint(source, options)
-            : path.extname(sourcePath) === ".astro"
-            ? astroParser.parseForESLint(source, options)
-            : path.extname(sourcePath) === ".ts"
-            ? tsParser.parseForESLint(source, options)
-            : vueParser.parseForESLint(source, options);
+              ? svelteParser.parseForESLint(source, options)
+              : path.extname(sourcePath) === ".astro"
+                ? astroParser.parseForESLint(source, options)
+                : path.extname(sourcePath) === ".ts"
+                  ? tsParser.parseForESLint(source, options)
+                  : vueParser.parseForESLint(source, options);
         const actual = buildTypes(source, result);
         const resultPath = sourcePath.replace(/source\.([a-z]+)$/u, "types.$1");
 

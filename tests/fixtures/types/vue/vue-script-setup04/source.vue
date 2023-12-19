@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { watchEffect } from "vue";
+import { watchEffect, ref } from "vue";
 import Foo from "./component.vue";
 type VMFoo = InstanceType<typeof Foo>;
-let a = $ref<VMFoo | null>(null);
+let a = ref<VMFoo | null>(null);
 watchEffect(() => {
-  if (a) fn(a);
+  if (a.value) fn(a);
 });
 
 const comp = {} as VMFoo | undefined;
