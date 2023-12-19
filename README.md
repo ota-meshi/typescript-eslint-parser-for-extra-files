@@ -70,13 +70,8 @@ npm install --save-dev astrojs-compiler-sync@latest @astrojs/compiler
 ## 📖 Usage
 
 1. Change the `include` in your `tsconfig.json` to include the component files (`*.vue`, `*.svelte`, and `*.astro`).
-2. Write `overrides.parserOptions.parser` option into your `tsconfig.json` file.
-
 ```jsonc
 {
-  "compilerOptions": {
-    // ...
-  },
   "include": [
     "**/*.vue",    // with Vue
     "**/*.svelte", // with Svelte
@@ -87,113 +82,89 @@ npm install --save-dev astrojs-compiler-sync@latest @astrojs/compiler
 }
 ```
 
+2. Write `overrides.parserOptions.parser` option in your `.eslintrc.cjs` file.
 ### With Vue
-
 ```js
 {
-    // ....
     "overrides": [
         {
             "files": ["*.ts", "*.tsx"],
             "parser": "typescript-eslint-parser-for-extra-files",
             "parserOptions": {
-                "project": "./your/tsconfig.json"
-                // ....
+                "project": "./tsconfig.json"
             },
-            // ....
         },
         {
             "files": ["*.vue"],
             "parser": "vue-eslint-parser",
             "parserOptions": {
-                "parser": require("typescript-eslint-parser-for-extra-files"),
+                "parser": "typescript-eslint-parser-for-extra-files",
                 // Or
                 // "parser": {
                 //     "ts": require("typescript-eslint-parser-for-extra-files")
                 // }
-                "project": "./your/tsconfig.json"
-                // ....
+                "project": "./tsconfig.json"
             },
-            // ....
         }
-        // ....
     ]
-    // ....
 }
 ```
 
 ### With Svelte
-
 ```js
 {
-    // ....
     "overrides": [
         {
             "files": ["*.ts", "*.tsx"],
             "parser": "typescript-eslint-parser-for-extra-files",
             "parserOptions": {
-                "project": "./your/tsconfig.json"
-                // ....
+                "project": "./tsconfig.json"
             },
-            // ....
         },
         {
             "files": ["*.svelte"],
             "parser": "svelte-eslint-parser",
             "parserOptions": {
-                "parser": require("typescript-eslint-parser-for-extra-files"),
+                "parser": "typescript-eslint-parser-for-extra-files",
                 // Or
                 // "parser": {
                 //     "ts": require("typescript-eslint-parser-for-extra-files")
                 // }
-                "project": "./your/tsconfig.json"
-                // ....
+                "project": "./tsconfig.json"
             },
-            // ....
         }
-        // ....
     ]
-    // ....
 }
 ```
 
 ### With Astro
-
 ```js
 {
-    // ....
     "overrides": [
         {
             "files": ["*.ts", "*.tsx"],
             "parser": "typescript-eslint-parser-for-extra-files",
             "parserOptions": {
-                "project": "./your/tsconfig.json"
-                // ....
+                "project": "./tsconfig.json"
             },
-            // ....
         },
         {
             "files": ["*.astro"],
             "parser": "astro-eslint-parser",
             "parserOptions": {
-                "parser": require("typescript-eslint-parser-for-extra-files"),
-                "project": "./your/tsconfig.json"
-                // ....
+                "parser": "typescript-eslint-parser-for-extra-files",
+                "project": "./tsconfig.json"
             },
-            // ....
         }
-        // ....
     ]
-    // ....
 }
 ```
 
 ## 👻 Limitations
 
-- Angle bracket type assertions cannot be used.
+- Angle bracket type assertions cannot be used:
 
-  This parser parses as JSX enabled.  
-  Therefore, angle bracket type assertions cannot be used. Use the `as` operator instead.
+  This parser parses as JSX enabled, therefore angle bracket type assertions cannot be used. Use the `as` operator instead.
 
   [The TypeScript Handbook - JSX > The `as` operator](https://www.typescriptlang.org/docs/handbook/jsx.html#the-as-operator)
 
