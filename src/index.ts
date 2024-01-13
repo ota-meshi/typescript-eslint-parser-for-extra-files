@@ -3,6 +3,7 @@ import type { ProgramOptions } from "./ts";
 import { TSServiceManager } from "./ts";
 import * as tsEslintParser from "@typescript-eslint/parser";
 import { getProjectConfigFiles } from "./utils/get-project-config-files";
+import { resolveProjectList } from "./utils/resolve-project-list";
 export * as meta from "./meta";
 export { name } from "./meta";
 
@@ -44,7 +45,20 @@ function* iterateOptions(options: ParserOptions): Iterable<ProgramOptions> {
       "Specify `parserOptions.project`. Otherwise there is no point in using this parser.",
     );
   }
-  for (const project of getProjectConfigFiles(options)) {
+  const tsconfigRootDir =
+    typeof options.tsconfigRootDir === "string"
+      ? options.tsconfigRootDir
+      : process.cwd();
+
+  for (const project of resolveProjectList({
+    project: getProjectConfigFiles({
+      project: options.project,
+      tsconfigRootDir,
+      filePath: options.filePath,
+    }),
+    projectFolderIgnoreList: options.projectFolderIgnoreList,
+    tsconfigRootDir,
+  })) {
     yield {
       project,
       filePath: options.filePath,
