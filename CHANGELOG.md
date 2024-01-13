@@ -1,5 +1,11 @@
 # typescript-eslint-parser-for-extra-files
 
+## 0.6.0
+
+### Minor Changes
+
+- [#84](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/pull/84) [`a8fd8cb`](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/commit/a8fd8cbcd3794a6c60d1f646d68c99593b238839) Thanks [@appano1](https://github.com/appano1)! - feat: Support glob pattern in `options.project`
+
 ## 0.5.0
 
 ### Minor Changes
