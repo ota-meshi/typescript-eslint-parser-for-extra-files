@@ -7,7 +7,7 @@
   "author": "Yosuke Ota (https://github.com/ota-meshi)",
   "funding": "https://github.com/sponsors/ota-meshi",
   "license": "MIT",
-  "packageManager": "yarn@1.22.21",
+  "packageManager": "yarn@1.22.22",
   "engines": {
     "node": ">=16.0.0"
   },
