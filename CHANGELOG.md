@@ -1,5 +1,11 @@
 # typescript-eslint-parser-for-extra-files
 
+## 0.7.0
+
+### Minor Changes
+
+- [#114](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/pull/114) [`29452db`](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/commit/29452db35613d4a5238f2b3c16ad8ce23bcb848a) Thanks [@ota-meshi](https://github.com/ota-meshi)! - feat: update svelte2tsx to >=0.7.9
+
 ## 0.6.0
 
 ### Minor Changes
