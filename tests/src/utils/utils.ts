@@ -2,7 +2,7 @@ import type * as tsEslintParser from "@typescript-eslint/parser";
 import path from "path";
 import * as vueParser from "vue-eslint-parser";
 
-const PROJECT_ROOT = path.join(__dirname, "../../..");
+const PROJECT_ROOT = path.normalize(path.join(__dirname, "../../.."));
 
 export function buildTypes(
   input: string,
@@ -59,7 +59,7 @@ export function buildTypes(
       return `${l} // ${types[i].join(", ").replace(/\n\s*/g, " ")}`;
     })
     .join("\n")
-    .replace(new RegExp(escapeRegExp(PROJECT_ROOT), "gu"), "");
+    .replace(new RegExp(escapeRegExp(PROJECT_ROOT), "giu"), "");
 }
 
 function escapeRegExp(string: string) {

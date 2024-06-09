@@ -7,13 +7,15 @@ export function transformForSvelte(
   if (context.current) {
     return code;
   }
+
   // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires -- ignore
   const svelte2tsx: typeof Svelte2tsx = require("svelte2tsx");
   const result = svelte2tsx.svelte2tsx(code, {
     filename: context.filePath,
   });
 
-  return `/// <reference types="svelte2tsx/svelte-shims" />
-  
+  return `/// <reference types="svelte2tsx/svelte-shims-v4" />
+/// <reference types="svelte2tsx/svelte-shims" />
+
 ${result.code}`;
 }
