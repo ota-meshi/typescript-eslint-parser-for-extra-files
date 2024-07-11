@@ -110,7 +110,7 @@
     "prettier-plugin-svelte": "^3.0",
     "semver": "^7.3.5",
     "svelte": "^4.0.0",
-    "svelte-eslint-parser": "^0.39.0",
+    "svelte-eslint-parser": "^0.40.0",
     "svelte2tsx": "^0.7.0",
     "tsup": "^8.0.0",
     "typescript": "~5.4.0",
