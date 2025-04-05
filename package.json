@@ -69,8 +69,7 @@
     }
   },
   "dependencies": {
-    "globby": "^11.1.0",
-    "is-glob": "^4.0.3"
+    "tinyglobby": "^0.2.12"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.0",

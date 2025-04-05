@@ -109,3 +109,4 @@ dist
 /tests/fixtures/**/actual-types.astro
 /tests/fixtures/**/actual-types.ts
 /lib
+/yarn.lock
