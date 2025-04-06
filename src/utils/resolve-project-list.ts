@@ -1,5 +1,4 @@
-import { sync as globSync } from "globby";
-import isGlob from "is-glob";
+import { globSync, isDynamicPattern } from "tinyglobby";
 import path from "path";
 import * as ts from "typescript";
 
@@ -42,9 +41,11 @@ export function resolveProjectList(
 
   // Transform glob patterns into paths
   const nonGlobProjects = sanitizedProjects.filter(
-    (project) => !isGlob(project),
+    (project) => !isDynamicPattern(project),
   );
-  const globProjects = sanitizedProjects.filter((project) => isGlob(project));
+  const globProjects = sanitizedProjects.filter((project) =>
+    isDynamicPattern(project),
+  );
 
   const uniqueCanonicalProjectPaths = new Set(
     nonGlobProjects
