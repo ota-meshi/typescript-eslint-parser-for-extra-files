@@ -1,5 +1,11 @@
 # typescript-eslint-parser-for-extra-files
 
+## 0.8.0
+
+### Minor Changes
+
+- [#137](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/pull/137) [`19551fb`](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/commit/19551fb5d1fb622de935e518cca649b3aedd6817) Thanks [@JounQin](https://github.com/JounQin)! - refactor: replace `globby` and `is-glob` with `tinyglobby`
+
 ## 0.7.0
 
 ### Minor Changes
