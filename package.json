@@ -108,7 +108,7 @@
     "prettier-plugin-pkg": "^0.19.0",
     "prettier-plugin-svelte": "^3.0",
     "semver": "^7.3.5",
-    "svelte": "^4.0.0",
+    "svelte": "^5.0.0",
     "svelte-eslint-parser": "^1.0.0",
     "svelte2tsx": "^0.7.0",
     "tsup": "^8.0.0",
