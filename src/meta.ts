@@ -1,8 +1,6 @@
 import { name as pkgName, version } from "../package.json";
-import type { TSESLint } from "@typescript-eslint/utils";
 
-const meta: TSESLint.FlatConfig.PluginMeta = { name: pkgName, version };
-
+const meta: { name: string; version: string } = { name: pkgName, version };
 export default meta;
 
 export const name: string = pkgName;
