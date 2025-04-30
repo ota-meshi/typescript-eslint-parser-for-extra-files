@@ -1,5 +1,11 @@
 # typescript-eslint-parser-for-extra-files
 
+## 0.9.0
+
+### Minor Changes
+
+- [#146](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/pull/146) [`7d42b06`](https://github.com/ota-meshi/typescript-eslint-parser-for-extra-files/commit/7d42b0639a2393999dabc630ee940211625ae336) Thanks [@lishaduck](https://github.com/lishaduck)! - Migrate to tsdown to fix dts output
+
 ## 0.8.0
 
 ### Minor Changes
