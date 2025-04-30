@@ -26,6 +26,6 @@
     "tests/**/*.svelte",
     "tests/**/*.astro",
     "tools/**/*.ts",
-    "tsup.config.ts"
+    "tsdown.config.mts"
   ]
 }
