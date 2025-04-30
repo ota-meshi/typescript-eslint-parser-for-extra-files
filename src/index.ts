@@ -4,8 +4,7 @@ import { TSServiceManager } from "./ts";
 import * as tsEslintParser from "@typescript-eslint/parser";
 import { getProjectConfigFiles } from "./utils/get-project-config-files";
 import { resolveProjectList } from "./utils/resolve-project-list";
-export * as meta from "./meta";
-export { name } from "./meta";
+export { default as meta, name } from "./meta";
 
 const DEFAULT_EXTRA_FILE_EXTENSIONS = [".vue", ".svelte", ".astro"];
 const tsServiceManager = new TSServiceManager();
