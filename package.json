@@ -124,7 +124,7 @@
     "svelte2tsx": "^0.7.0",
     "tsdown": "^0.11.0",
     "typescript": "~5.8.0",
-    "unplugin-unused": "^0.4.4",
+    "unplugin-unused": "^0.5.0",
     "vue": "^3.2.41",
     "vue-eslint-parser": "^10.0.0"
   },
